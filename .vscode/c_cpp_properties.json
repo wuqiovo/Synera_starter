@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "D:\\Qt\\6.11.0\\mingw_64\\include",
+                "D:\\Qt\\6.11.0\\mingw_64\\include\\QtCore",
+                "D:\\Qt\\6.11.0\\mingw_64\\include\\QtGui",
+                "D:\\Qt\\6.11.0\\mingw_64\\include\\QtWidgets"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE"
+            ],
+            "compilerPath": "D:\\mingw64\\bin\\gcc.exe",
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "windows-gcc-x64"
+        }
+    ],
+    "version": 4
+}

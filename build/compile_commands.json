@@ -1,0 +1,68 @@
+[
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\Synera_Starter_autogen\\mocs_compilation.cpp.obj -c D:\\PA\\Synera_starter\\build\\Synera_Starter_autogen\\mocs_compilation.cpp",
+  "file": "D:/PA/Synera_starter/build/Synera_Starter_autogen/mocs_compilation.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/Synera_Starter_autogen/mocs_compilation.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\core\\bench.cpp.obj -c D:\\PA\\Synera_starter\\src\\core\\bench.cpp",
+  "file": "D:/PA/Synera_starter/src/core/bench.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/core/bench.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\core\\board.cpp.obj -c D:\\PA\\Synera_starter\\src\\core\\board.cpp",
+  "file": "D:/PA/Synera_starter/src/core/board.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/core/board.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\core\\game.cpp.obj -c D:\\PA\\Synera_starter\\src\\core\\game.cpp",
+  "file": "D:/PA/Synera_starter/src/core/game.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\entity\\player.cpp.obj -c D:\\PA\\Synera_starter\\src\\entity\\player.cpp",
+  "file": "D:/PA/Synera_starter/src/entity/player.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\entity\\unit.cpp.obj -c D:\\PA\\Synera_starter\\src\\entity\\unit.cpp",
+  "file": "D:/PA/Synera_starter/src/entity/unit.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\gui\\gamewindow.cpp.obj -c D:\\PA\\Synera_starter\\src\\gui\\gamewindow.cpp",
+  "file": "D:/PA/Synera_starter/src/gui/gamewindow.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\gui\\griditem.cpp.obj -c D:\\PA\\Synera_starter\\src\\gui\\griditem.cpp",
+  "file": "D:/PA/Synera_starter/src/gui/griditem.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/gui/griditem.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\gui\\startwindow.cpp.obj -c D:\\PA\\Synera_starter\\src\\gui\\startwindow.cpp",
+  "file": "D:/PA/Synera_starter/src/gui/startwindow.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/gui/startwindow.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\gui\\unititem.cpp.obj -c D:\\PA\\Synera_starter\\src\\gui\\unititem.cpp",
+  "file": "D:/PA/Synera_starter/src/gui/unititem.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\main.cpp.obj -c D:\\PA\\Synera_starter\\src\\main.cpp",
+  "file": "D:/PA/Synera_starter/src/main.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/main.cpp.obj"
+}
+]
