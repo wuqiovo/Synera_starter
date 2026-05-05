@@ -139,9 +139,14 @@ bool Unit::prepareForAct(Game* game)
         }
     }
 
+    if (m_status != Status::Dead && m_status != Status::Attacking && m_status != Status::Casting) {
+        m_target = findTarget(game);
+    }
+
     if (m_stunTurns > 0) {
+        // 原来会将状态设置为Idle，但这会导致单位在被击晕时丢失当前状态
+        // 改为保持原状态但跳过行动
         --m_stunTurns;
-        setStatus(Status::Idle);
         return false;
     }
 
@@ -151,6 +156,8 @@ bool Unit::prepareForAct(Game* game)
     
     // 在非死亡状态下检查目标状态，必要时重置目标和状态
     if (m_status != Status::Dead) {
+        // 单位存活时优先寻找目标
+
         if (m_target && m_target->status() == Status::Dead) {
             m_target = nullptr;
             setStatus(Status::Idle);
@@ -159,6 +166,11 @@ bool Unit::prepareForAct(Game* game)
         if (!m_target && m_status != Status::Idle) {
             setStatus(Status::Idle);
         }
+
+        if (m_target && distanceTo(m_target) > range()) {
+            setStatus(Status::Moving);
+        }
+
         return true;
     }
 
@@ -175,9 +187,13 @@ void Unit::normalIdleBehavior(Game* game)
     if (m_mana > m_maxMana) {
         m_mana = m_maxMana;
     }
+    /* 改为在pre阶段寻找目标
+       每次行动之前自动寻找目标
     if (!m_target || m_target->status() == Status::Dead) {
         m_target = findTarget(game);
     }
+    */
+    
     if (m_target && distanceTo(m_target) > range()) {
         setStatus(Status::Moving);
     }
@@ -216,6 +232,9 @@ void Unit::resolveAttack(Game* game)
         m_target = nullptr;
         setStatus(Status::Idle);
     }
+    else if (m_target && m_mana == m_maxMana) {
+        setStatus(Status::Casting);
+    }
 }
 
 void Unit::setDamageOutputReduction(int turns, float ratio)
@@ -253,6 +272,7 @@ Warrior::Warrior(const QString& name, int hp, int atk)
     if (atk >= 0) {
         setAtk(atk);
     }
+    setHp(1000); // 调试高Hp
 }
 
 void Warrior::act(Game* game)
@@ -329,6 +349,7 @@ Mage::Mage(const QString& name, int hp, int atk)
     if (atk >= 0) {
         setAtk(atk);
     }
+    setHp(1000); // 调试高Hp
 }
 
 void Mage::act(Game* game)
@@ -418,6 +439,7 @@ Archer::Archer(const QString& name, int hp, int atk)
     if (atk >= 0) {
         setAtk(atk);
     }
+    setHp(1000); // 调试高Hp
 }
 
 void Archer::act(Game* game)
