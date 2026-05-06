@@ -83,8 +83,18 @@ int Unit::distanceTo(const Unit* other) const
     if (!other) {
         return -1;
     }
-    return std::abs(other->position().x() - this->position().x()) +
-           std::abs(other->position().y() - this->position().y());
+
+    int q1 = this->position().x() - 
+            (this->position().y() - (this->position().y() & 1)) / 2;
+    int r1 = this->position().y();
+    int s1 = -q1 - r1;
+
+    int q2 = other->position().x() - 
+            (other->position().y() - (other->position().y() & 1)) / 2;
+    int r2 = other->position().y();
+    int s2 = -q2 - r2;
+    
+    return (std::abs(q2 - q1) + std::abs(r2 - r1) + std::abs(s2 - s1)) / 2;
 }
 
 void Unit::moveTowardsTarget(Game* game, const Unit* target)
