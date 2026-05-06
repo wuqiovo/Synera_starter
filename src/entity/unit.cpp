@@ -1,6 +1,10 @@
 #include "unit.h"
 #include "core/game.h"
+#include "core/board.h"
 #include <QList>
+#include <QHash>
+#include <QQueue>
+#include <QSet>
 
 int Unit::s_nextId = 0;
 
@@ -84,41 +88,176 @@ int Unit::distanceTo(const Unit* other) const
         return -1;
     }
 
-    int q1 = this->position().x() - 
-            (this->position().y() - (this->position().y() & 1)) / 2;
+        int q1 = this->position().x() - 
+            (this->position().y() + (this->position().y() & 1)) / 2;
     int r1 = this->position().y();
     int s1 = -q1 - r1;
 
-    int q2 = other->position().x() - 
-            (other->position().y() - (other->position().y() & 1)) / 2;
+        int q2 = other->position().x() - 
+            (other->position().y() + (other->position().y() & 1)) / 2;
     int r2 = other->position().y();
     int s2 = -q2 - r2;
     
     return (std::abs(q2 - q1) + std::abs(r2 - r1) + std::abs(s2 - s1)) / 2;
 }
 
+namespace {
+struct AxialCoord {
+    int q;
+    int r;
+};
+
+// 将偶数行右移布局的偏移坐标转换为轴向坐标。
+AxialCoord toAxialCoord(const QPoint& pos)
+{
+    const int q = pos.x() - (pos.y() + (pos.y() & 1)) / 2;
+    const int r = pos.y();
+    return { q, r };
+}
+
+// 将轴向坐标转换为偶数行右移布局的偏移坐标。
+QPoint toOffsetCoord(const AxialCoord& coord)
+{
+    const int x = coord.q + (coord.r + (coord.r & 1)) / 2;
+    return QPoint(x, coord.r);
+}
+
+// 计算两个格子在六边形网格中的距离。
+int hexDistance(const QPoint& a, const QPoint& b)
+{
+    const AxialCoord aAx = toAxialCoord(a);
+    const AxialCoord bAx = toAxialCoord(b);
+    const int s1 = -aAx.q - aAx.r;
+    const int s2 = -bAx.q - bAx.r;
+    return (std::abs(aAx.q - bAx.q) + std::abs(aAx.r - bAx.r) + std::abs(s1 - s2)) / 2;
+}
+
+// 获取六边形网格中一个格子的六个相邻格。
+QVector<QPoint> hexNeighbors(const QPoint& pos)
+{
+    static const int kDirQ[6] = { 1, 1, 0, -1, -1, 0 };
+    static const int kDirR[6] = { 0, -1, -1, 0, 1, 1 };
+    QVector<QPoint> result;
+    result.reserve(6);
+
+    const AxialCoord axial = toAxialCoord(pos);
+    for (int i = 0; i < 6; ++i) {
+        const AxialCoord next{ axial.q + kDirQ[i], axial.r + kDirR[i] };
+        result.append(toOffsetCoord(next));
+    }
+    return result;
+}
+}
+
 void Unit::moveTowardsTarget(Game* game, const Unit* target)
 {
-    if (!target) {
+
+    if (!game || !target) {
         return;
     }
 
-    // 简单的移动逻辑：向目标单位的方向移动一步
-    int dx = target->position().x() - this->position().x();
-    int dy = target->position().y() - this->position().y();
-
-    QPoint nextPos = position();
-    if (std::abs(dx) > std::abs(dy)) {
-        nextPos = QPoint(position().x() + (dx > 0 ? 1 : -1), position().y());
-    } else if (dy != 0) {
-        nextPos = QPoint(position().x(), position().y() + (dy > 0 ? 1 : -1));
+    // 定义起点与终点用于路径规划。
+    const QPoint start = position();
+    const QPoint goal = target->position();
+    if (start == goal) {
+        return;
     }
 
-    if (game) {
-        game->moveUnitDuringBattle(this, nextPos);
-    } else {
-        setPosition(nextPos);
+    // 棋盘边界检查，供 BFS 扩展使用。
+    auto isValid = [](const QPoint& pos) {
+        return pos.x() >= 0 && pos.x() < Board::COLS && pos.y() >= 0 && pos.y() < Board::ROWS;
+    };
+
+    // 收集已占用格子，作为障碍处理。
+    QSet<QPoint> blocked;
+    const QList<Unit*>& units = game->units();
+    for (Unit* unit : units) {
+        if (!unit || unit == this || unit->status() == Status::Dead) {
+            continue;
+        }
+        if (game->isUnitOnBoard(unit)) {
+            blocked.insert(unit->position());
+        }
     }
+
+    // 可通行检查：在边界内且未被占用。
+    auto isPassable = [&](const QPoint& pos) {
+        return isValid(pos) && !blocked.contains(pos);
+    };
+
+    // BFS 寻找一条到达“可攻击范围内格子”的最短路径。
+    QQueue<QPoint> frontier;
+    QSet<QPoint> visited;
+    QHash<QPoint, QPoint> cameFrom;
+    QHash<QPoint, int> stepsFromStart;
+
+    // 以起点初始化 BFS 队列。
+    frontier.enqueue(start);
+    visited.insert(start);
+    cameFrom.insert(start, start);
+    stepsFromStart.insert(start, 0);
+
+    // 记录可达的“最接近目标”的备选格子。
+    QPoint bestCell = start;
+    int bestDistance = hexDistance(start, goal);
+    int bestSteps = 0;
+    bool foundGoal = false;
+    QPoint foundCell = start;
+
+    // 标准 BFS 循环：按层扩展前沿。
+    while (!frontier.isEmpty()) {
+        const QPoint current = frontier.dequeue();
+        const int distToTarget = hexDistance(current, goal);
+        // 若无法进入攻击范围，则使用更近的格子作为备选。
+        const int curSteps = stepsFromStart.value(current, 0);
+        // 若距离更近则更新；若距离相同且当前是非起点，则允许替换避免原地停滞。
+        if (distToTarget < bestDistance
+            || (distToTarget == bestDistance && bestCell == start && current != start)
+            || (distToTarget == bestDistance && curSteps < bestSteps)) {
+            bestDistance = distToTarget;
+            bestSteps = curSteps;
+            bestCell = current;
+        }
+
+        // 一旦当前格子已在攻击范围内，提前停止。
+        if (distToTarget <= range()) {
+            foundGoal = true;
+            foundCell = current;
+            break;
+        }
+
+        // 扩展当前格子的六个相邻格。
+        const QVector<QPoint> neighbors = hexNeighbors(current);
+        for (const QPoint& next : neighbors) {
+            // 跳过已访问或不可通行的格子。
+            if (visited.contains(next) || !isPassable(next)) {
+                continue;
+            }
+            visited.insert(next);
+            cameFrom.insert(next, current);
+            stepsFromStart.insert(next, stepsFromStart.value(current, 0) + 1);
+            frontier.enqueue(next);
+        }
+    }
+
+    // 选择可达目的地：优先进入攻击范围，否则选最近备选格。
+    const QPoint destination = foundGoal ? foundCell : bestCell;
+    if (destination == start) {
+        return;
+    }
+
+    // 从目的地回溯一步，决定本回合的移动步。
+    QPoint step = destination;
+    while (cameFrom.contains(step) && cameFrom.value(step) != start) {
+        step = cameFrom.value(step);
+    }
+    // 移动前的最终安全检查。
+    if (step == start || !isPassable(step)) {
+        return;
+    }
+
+    // 在棋盘上执行移动。
+    game->moveUnitDuringBattle(this, step);
 }
 
 void Unit::attackTarget(Unit* target)
@@ -282,7 +421,7 @@ Warrior::Warrior(const QString& name, int hp, int atk)
     if (atk >= 0) {
         setAtk(atk);
     }
-    setHp(1000); // 调试高Hp
+    // setHp(1000); // 调试高Hp
 }
 
 void Warrior::act(Game* game)
@@ -321,6 +460,7 @@ void Warrior::act(Game* game)
     case Status::Casting:
         // 留给战士特殊技能
         skill(game);
+        resolveAttack(game);
         setMana(0);
         break;
     case Status::Dead:
@@ -359,7 +499,7 @@ Mage::Mage(const QString& name, int hp, int atk)
     if (atk >= 0) {
         setAtk(atk);
     }
-    setHp(1000); // 调试高Hp
+    // setHp(1000); // 调试高Hp
 }
 
 void Mage::act(Game* game)
@@ -399,6 +539,7 @@ void Mage::act(Game* game)
     case Status::Casting:
         // 满蓝时施放特殊技能
         skill(game);
+        resolveAttack(game);
         setMana(0);
         break;
     case Status::Dead:
@@ -449,7 +590,7 @@ Archer::Archer(const QString& name, int hp, int atk)
     if (atk >= 0) {
         setAtk(atk);
     }
-    setHp(1000); // 调试高Hp
+    // setHp(1000); // 调试高Hp
 }
 
 void Archer::act(Game* game)
@@ -490,6 +631,7 @@ void Archer::act(Game* game)
         // 满蓝时施放特殊技能
         skill(game);
         setMana(0);
+        resolveAttack(game);
         break;
     case Status::Dead:
         // 已死亡状态下可能播放死亡动画、移除单位等

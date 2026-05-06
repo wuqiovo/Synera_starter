@@ -350,4 +350,9 @@ CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj: \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qvector.h \
  D:/PA/Synera_starter/src/entity/unit.h \
  D:/PA/Synera_starter/src/core/bench.h \
- D:/PA/Synera_starter/src/entity/player.h
+ D:/PA/Synera_starter/src/entity/player.h \
+ D:/PA/Synera_starter/src/core/board.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/QQueue \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qqueue.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/QSet \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qset.h
