@@ -26,6 +26,8 @@ private slots:
     void onSaveAndExitClicked();
     void refreshInfoPanels();
     void onBattleStateChanged(bool inBattle);
+    void onGameOver();
+    void onEnemyDefeated();
 
 private:
     void setupUI();

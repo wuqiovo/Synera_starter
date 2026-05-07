@@ -102,6 +102,55 @@ void GameWindow::onSaveAndExitClicked()
     qApp->quit();
 }
 
+void GameWindow::onGameOver()
+{
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle(QString::fromUtf8("游戏失败"));
+    msgBox.setText(QString::fromUtf8("玩家血量归零，游戏结束！"));
+    QPushButton* newGameBtn = msgBox.addButton(QString::fromUtf8("开启新游戏"), QMessageBox::ActionRole);
+    QPushButton* loadGameBtn = msgBox.addButton(QString::fromUtf8("读档"), QMessageBox::ActionRole);
+    
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == newGameBtn) {
+        if (m_game) {
+            m_game->debugResetAll();
+        }
+    } else if (msgBox.clickedButton() == loadGameBtn) {
+        const QString path = QFileDialog::getOpenFileName(
+            this,
+            tr("Load Game"),
+            QString(),
+            tr("Save Files (*.json);;All Files (*.*)")
+        );
+        if (!path.isEmpty()) {
+            loadFromFile(path);
+        }
+    }
+}
+
+void GameWindow::onEnemyDefeated()
+{
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle(QString::fromUtf8("阶段胜利"));
+    msgBox.setText(QString::fromUtf8("你通过了本阶段！"));
+    QPushButton* nextStageBtn = msgBox.addButton(QString::fromUtf8("进入下一阶段"), QMessageBox::ActionRole);
+    QPushButton* saveExitBtn = msgBox.addButton(QString::fromUtf8("保存并退出"), QMessageBox::ActionRole);
+    
+    msgBox.exec();
+
+    if (msgBox.clickedButton() == nextStageBtn) {
+        if (m_game) {
+            m_game->startNextStage();
+        }
+    } else if (msgBox.clickedButton() == saveExitBtn) {
+        if (m_game) {
+            m_game->startNextStage();
+            onSaveAndExitClicked();
+        }
+    }
+}
+
 // 刷新玩家/敌方信息面板。
 void GameWindow::refreshInfoPanels()
 {
@@ -243,6 +292,10 @@ void GameWindow::setupUI()
         this, &GameWindow::refreshInfoPanels);
     connect(m_game, &Game::battleStateChanged,
         this, &GameWindow::onBattleStateChanged);
+    connect(m_game, &Game::gameOver,
+        this, &GameWindow::onGameOver);
+    connect(m_game, &Game::enemyDefeated,
+        this, &GameWindow::onEnemyDefeated);
 
     const bool inBattle = m_game->isInBattle();
     m_endDeploymentButton->setEnabled(!inBattle);

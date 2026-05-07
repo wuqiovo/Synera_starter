@@ -166,7 +166,12 @@ void Game::debugEndBattle()
 
     m_inBattle = false;
     emit battleStateChanged(m_inBattle);
-    startNextRound();
+
+    if (m_enemyHp > 0 && m_player.getHp() > 0) {
+        startNextRound();
+    } else if (m_enemyHp <= 0) {
+        startNextStage();
+    }
 }
 
 // 用于调试：重置全部状态并回到初始关卡。
@@ -1128,10 +1133,17 @@ int Game::countAliveUnits(Unit::Owner owner) const
     return count;
 }
 
-// 按规则对失败方总血量造成伤害。
+// 按规则对失败方总血量造成伤害，并发放金币奖励。
 void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
 {
-    const int damage = 5 * remainingUnits;
+    const int damage = 10 * remainingUnits;
+    
+    if (winner == Unit::Owner::PlayerCtrl) {
+        m_player.setGold(m_player.getGold() + 6);
+    } else {
+        m_player.setGold(m_player.getGold() + 3);
+    }
+
     if (damage <= 0) {
         return;
     }
@@ -1139,11 +1151,17 @@ void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
     if (winner == Unit::Owner::PlayerCtrl) {
         m_enemyHp = qMax(0, m_enemyHp - damage);
         emit enemyInfoChanged();
+        if (m_enemyHp <= 0) {
+            emit enemyDefeated(); 
+        }
         return;
     }
 
     m_player.reduceHp(damage);
     emit playerInfoChanged();
+    if (m_player.getHp() <= 0) {
+        emit gameOver(); // Need to define this signal or handle it.
+    }
 }
 
 // 根据当前棋盘状态完成一次回合结算。
@@ -1215,7 +1233,10 @@ void Game::battleTick()
         resolveRoundFromCurrentBoard();
         m_inBattle = false;
         emit battleStateChanged(m_inBattle);
-        startNextRound();
+        
+        if (m_enemyHp > 0 && m_player.getHp() > 0) {
+            startNextRound();
+        }
     }
 }
 

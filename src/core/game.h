@@ -67,6 +67,8 @@ signals:
     void enemyInfoChanged();
     void stageRoundChanged();
     void battleStateChanged(bool inBattle);
+    void gameOver();
+    void enemyDefeated();
 
 private:
     void clearAllUnits();
