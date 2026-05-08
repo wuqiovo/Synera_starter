@@ -43,8 +43,8 @@ public:
     bool loadFromFile(const QString& filePath);
 
     Player* player() { return &m_player; }
-    int enemyHp() const { return m_enemyHp; }
-    int enemyMaxHp() const { return m_enemyMaxHp; }
+    int enemyDefeatedWaves() const { return m_enemyDefeatedWaves; }
+    int enemyMaxWaves() const { return m_enemyMaxWaves; }
     int stage() const { return m_stage; }
     int round() const { return m_round; }
     bool isInBattle() const { return m_inBattle; }
@@ -167,10 +167,10 @@ private:
     // 当前轮次
     int m_round;
 
-    // 敌方总血量与上限。
-    int m_enemyHp;
-    // 敌方最大总血量。
-    int m_enemyMaxHp;
+    // 敌方已战胜波次与波次上限。
+    int m_enemyDefeatedWaves;
+    // 敌方最大波次。
+    int m_enemyMaxWaves;
 
     // 敌方单位数量上限。
     int m_enemyUnitCap;

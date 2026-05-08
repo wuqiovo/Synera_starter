@@ -83,6 +83,11 @@ void GameWindow::onSaveAndExitClicked()
         return;
     }
 
+    if (m_game->isInBattle()) {
+        QMessageBox::warning(this, QString::fromUtf8("无法保存"), QString::fromUtf8("战斗阶段禁止存档，请在部署阶段操作。"));
+        return;
+    }
+
     const QString filePath = QFileDialog::getSaveFileName(
         this,
         tr("Save Game"),
@@ -180,9 +185,9 @@ void GameWindow::refreshInfoPanels()
                                    .arg(playerArcher));
 
     m_enemyInfoLabel->setText(QString::fromUtf8(
-                                  "敌方\n总血量: %1/%2\n羁绊: 战士 %3  法师 %4  弓手 %5")
-                                  .arg(m_game->enemyHp())
-                                  .arg(m_game->enemyMaxHp())
+                                  "敌方\n已战胜波次: %1/%2\n羁绊: 战士 %3  法师 %4  弓手 %5")
+                                  .arg(m_game->enemyDefeatedWaves())
+                                  .arg(m_game->enemyMaxWaves())
                                   .arg(enemyWarrior)
                                   .arg(enemyMage)
                                   .arg(enemyArcher));
@@ -193,6 +198,7 @@ void GameWindow::onBattleStateChanged(bool inBattle)
 {
     m_endDeploymentButton->setEnabled(!inBattle);
     m_endBattleDebugButton->setEnabled(inBattle);
+    m_saveExitButton->setEnabled(!inBattle); // 战斗中禁用保存并退出按钮
     if (m_phaseLabel) {
         m_phaseLabel->setText(inBattle ? QString::fromUtf8("战斗阶段")
                                         : QString::fromUtf8("部署阶段"));

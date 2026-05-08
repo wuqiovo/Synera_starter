@@ -44,7 +44,9 @@ template <> constexpr inline auto Game::qt_create_metaobjectdata<qt_meta_tag_ZN4
         "enemyInfoChanged",
         "stageRoundChanged",
         "battleStateChanged",
-        "inBattle"
+        "inBattle",
+        "gameOver",
+        "enemyDefeated"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -58,6 +60,10 @@ template <> constexpr inline auto Game::qt_create_metaobjectdata<qt_meta_tag_ZN4
         QtMocHelpers::SignalData<void(bool)>(5, 2, QMC::AccessPublic, QMetaType::Void, {{
             { QMetaType::Bool, 6 },
         }}),
+        // Signal 'gameOver'
+        QtMocHelpers::SignalData<void()>(7, 2, QMC::AccessPublic, QMetaType::Void),
+        // Signal 'enemyDefeated'
+        QtMocHelpers::SignalData<void()>(8, 2, QMC::AccessPublic, QMetaType::Void),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -85,6 +91,8 @@ void Game::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
         case 1: _t->enemyInfoChanged(); break;
         case 2: _t->stageRoundChanged(); break;
         case 3: _t->battleStateChanged((*reinterpret_cast<std::add_pointer_t<bool>>(_a[1]))); break;
+        case 4: _t->gameOver(); break;
+        case 5: _t->enemyDefeated(); break;
         default: ;
         }
     }
@@ -96,6 +104,10 @@ void Game::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
         if (QtMocHelpers::indexOfMethod<void (Game::*)()>(_a, &Game::stageRoundChanged, 2))
             return;
         if (QtMocHelpers::indexOfMethod<void (Game::*)(bool )>(_a, &Game::battleStateChanged, 3))
+            return;
+        if (QtMocHelpers::indexOfMethod<void (Game::*)()>(_a, &Game::gameOver, 4))
+            return;
+        if (QtMocHelpers::indexOfMethod<void (Game::*)()>(_a, &Game::enemyDefeated, 5))
             return;
     }
 }
@@ -119,14 +131,14 @@ int Game::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 4)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 4;
+        _id -= 6;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 4)
+        if (_id < 6)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 4;
+        _id -= 6;
     }
     return _id;
 }
@@ -153,5 +165,17 @@ void Game::stageRoundChanged()
 void Game::battleStateChanged(bool _t1)
 {
     QMetaObject::activate<void>(this, &staticMetaObject, 3, nullptr, _t1);
+}
+
+// SIGNAL 4
+void Game::gameOver()
+{
+    QMetaObject::activate(this, &staticMetaObject, 4, nullptr);
+}
+
+// SIGNAL 5
+void Game::enemyDefeated()
+{
+    QMetaObject::activate(this, &staticMetaObject, 5, nullptr);
 }
 QT_WARNING_POP

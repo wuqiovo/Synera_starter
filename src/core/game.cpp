@@ -34,9 +34,9 @@ Game::Game(QObject* parent)
     , m_sourceBenchSlot(-1)
     , m_stage(0)
     , m_round(1)
-    , m_enemyHp(100)
-    , m_enemyMaxHp(100)
-    , m_enemyUnitCap(10)
+    , m_enemyDefeatedWaves(0)
+    , m_enemyMaxWaves(5)
+    , m_enemyUnitCap(30)
     , m_enemyUnitCount(0)
     , m_inBattle(false)
     , m_battleTimer(new QTimer(this))
@@ -76,7 +76,8 @@ void Game::reset()
     m_sourceFromBench = false;
     m_sourceBenchSlot = -1;
     m_round = 0;
-    m_enemyHp = m_enemyMaxHp;
+    m_enemyDefeatedWaves = 0;
+    m_enemyMaxWaves = 5;
     m_inBattle = false;
     m_player.setHp(100);
     m_player.setGold(5);
@@ -167,9 +168,9 @@ void Game::debugEndBattle()
     m_inBattle = false;
     emit battleStateChanged(m_inBattle);
 
-    if (m_enemyHp > 0 && m_player.getHp() > 0) {
+    if (m_enemyDefeatedWaves < m_enemyMaxWaves && m_player.getHp() > 0) {
         startNextRound();
-    } else if (m_enemyHp <= 0) {
+    } else if (m_enemyDefeatedWaves >= m_enemyMaxWaves) {
         startNextStage();
     }
 }
@@ -202,8 +203,8 @@ GameState Game::captureState() const
     state.player.round = m_round;
     state.player.name = m_player.getPlayerName();
 
-    state.enemyHp = m_enemyHp;
-    state.enemyMaxHp = m_enemyMaxHp;
+    state.enemyDefeatedWaves = m_enemyDefeatedWaves;
+    state.enemyMaxWaves = m_enemyMaxWaves;
     state.inBattle = m_inBattle;
 
     // 预分配空间以提升性能，避免多次扩容。
@@ -256,8 +257,8 @@ void Game::loadFromState(const GameState& state)
 
     m_stage = state.player.stage;
     m_round = state.player.round;
-    m_enemyHp = state.enemyHp;
-    m_enemyMaxHp = state.enemyMaxHp;
+    m_enemyDefeatedWaves = state.enemyDefeatedWaves;
+    m_enemyMaxWaves = state.enemyMaxWaves;
     m_inBattle = state.inBattle;
 
     m_player.setHp(state.player.hp);
@@ -376,6 +377,10 @@ void Game::refreshTraitCounts()
 
 bool Game::saveToFile(const QString& filePath) const
 {
+    if (m_inBattle) {
+        return false; // 战斗中不允许存档
+    }
+
     GameState state = captureState();
 
     QJsonObject root;
@@ -389,8 +394,8 @@ bool Game::saveToFile(const QString& filePath) const
     player["name"] = state.player.name;
     root["player"] = player;
 
-    root["enemyHp"] = state.enemyHp;
-    root["enemyMaxHp"] = state.enemyMaxHp;
+    root["enemyDefeatedWaves"] = state.enemyDefeatedWaves;
+    root["enemyMaxWaves"] = state.enemyMaxWaves;
     root["inBattle"] = state.inBattle;
 
     QJsonArray units;
@@ -453,8 +458,8 @@ bool Game::loadFromFile(const QString& filePath)
     state.player.round = player.value("round").toInt(1);
     state.player.name = player.value("name").toString();
 
-    state.enemyHp = root.value("enemyHp").toInt(100);
-    state.enemyMaxHp = root.value("enemyMaxHp").toInt(100);
+    state.enemyDefeatedWaves = root.value("enemyDefeatedWaves").toInt(0); // Old saves might be lost, that's fine
+    state.enemyMaxWaves = root.value("enemyMaxWaves").toInt(5);
     state.inBattle = root.value("inBattle").toBool(false);
 
     const QJsonArray units = root.value("units").toArray();
@@ -651,19 +656,13 @@ void Game::createStarterUnitsIfNeeded()
 }
 
 
-// 最简敌方轮次生成：每关固定 3 个敌方单位，并优先放置到上半区固定坐标。
+// 敌方轮次生成：随回合数增加敌方单位数量（最多5个），并根据阶段属性增幅，第5波追加1个最终Boss。
 void Game::spawnEnemiesForCurrentRound()
 {
     const int availableSlots = m_enemyUnitCap - m_enemyUnitCount;
     if (availableSlots <= 0) {
         return;
     }
-
-    const QPoint enemyInitialPositions[] = {
-        QPoint(2, 0),
-        QPoint(3, 0),
-        QPoint(4, 0)
-    };
 
     auto attachUnitItemFor = [this](Unit* unit) {
         UnitItem* unitItem = new UnitItem(unit);
@@ -680,21 +679,52 @@ void Game::spawnEnemiesForCurrentRound()
                 this, &Game::handleDropCommand);
     };
 
+    // 常规敌人数量，随回合数增加（第一回合2个，最多5个）
+    const int normalCount = qMin(5, m_round + 1);
+    const bool spawnBoss = (m_enemyDefeatedWaves >= 4);
+    const int totalEnemies = normalCount + (spawnBoss ? 1 : 0);
+
+    // 属性增幅：每增加一关增加10%
+    const double multiplier = 1.0 + 0.1 * qMax(0, m_stage - 1);
+
+    const QPoint normalPositions[] = {
+        QPoint(2, 0), QPoint(3, 0), QPoint(4, 0), QPoint(1, 0), QPoint(5, 0)
+    };
+    const QPoint bossPositions[] = {
+        QPoint(3, 1), QPoint(2, 1), QPoint(4, 1), QPoint(3, 2), QPoint(3, 0)
+    };
+
     int spawned = 0;
-    for (int i = 0; i < 3 && spawned < availableSlots; ++i) {
+    for (int i = 0; i < totalEnemies && spawned < availableSlots; ++i) {
         Unit* newEnemy = nullptr;
-        switch (i) {
-        case 0:
-            newEnemy = new Warrior(QString::fromUtf8("敌方战士"), 150, 10);
-            break;
-        case 1:
-            newEnemy = new Mage(QString::fromUtf8("敌方法师"), 80, 15);
-            break;
-        case 2:
-            newEnemy = new Archer(QString::fromUtf8("敌方弓手"), 100, 10);
-            break;
-        default:
-            break;
+        const QPoint* prefArr = nullptr;
+        int prefCount = 0;
+
+        bool isBoss = spawnBoss && (i == normalCount);
+
+        if (isBoss) {
+            // 后续替换为独立的 Boss 类，目前使用基础 Unit 占位
+            newEnemy = new Unit(QString::fromUtf8("最终Boss(占位)"), Unit::Trait::None);
+            newEnemy->setHp(500 * multiplier);
+            newEnemy->setMaxHp(500 * multiplier);
+            newEnemy->setAtk(30 * multiplier);
+
+            prefArr = bossPositions;
+            prefCount = 5;
+        } else {
+            // 增量顺序：0:战士, 1:弓手, 2:法师, 3:战士, 4:弓手
+            if (i == 0 || i == 3) {
+                newEnemy = new Warrior(QString::fromUtf8("敌方战士"), 150 * multiplier, 10 * multiplier);
+            } else if (i == 1 || i == 4) {
+                newEnemy = new Archer(QString::fromUtf8("敌方弓手"), 100 * multiplier, 10 * multiplier);
+            } else if (i == 2) {
+                newEnemy = new Mage(QString::fromUtf8("敌方法师"), 80 * multiplier, 15 * multiplier);
+            }
+
+            if (i < 5) {
+                prefArr = &normalPositions[i];
+                prefCount = 1;
+            }
         }
 
         if (!newEnemy) {
@@ -702,32 +732,35 @@ void Game::spawnEnemiesForCurrentRound()
         }
         newEnemy->setOwner(Unit::Owner::EnemyCtrl);
 
-        const QPoint preferredPos = enemyInitialPositions[i];
-        if (m_board.addUnit(newEnemy, preferredPos)) {
+        bool placed = false;
+
+        // 1. 尝试首选预设位置
+        for (int p = 0; p < prefCount; ++p) {
+            if (m_board.addUnit(newEnemy, prefArr[p])) {
+                placed = true;
+                break;
+            }
+        }
+
+        // 2. 预设位置均被占用时，回退到敌方半场（上半区0~R/2）任意空格
+        if (!placed) {
+            for (int row = 0; row < Board::ROWS / 2 && !placed; ++row) {
+                for (int col = 0; col < Board::COLS; ++col) {
+                    if (m_board.addUnit(newEnemy, QPoint(col, row))) {
+                        placed = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // 3. 最终落子确认：入场或丢弃回收内存
+        if (placed) {
             m_units.append(newEnemy);
             attachUnitItemFor(newEnemy);
             ++m_enemyUnitCount;
             ++spawned;
-            continue;
-        }
-
-        bool placed = false;
-
-        // 固定点被占时，先回退到敌方半场任意空格。
-        for (int row = 0; row < Board::ROWS / 2 && !placed; ++row) {
-            for (int col = 0; col < Board::COLS; ++col) {
-                const QPoint fallback(col, row);
-                if (m_board.addUnit(newEnemy, fallback)) {
-                    m_units.append(newEnemy);
-                    attachUnitItemFor(newEnemy);
-                    ++m_enemyUnitCount;
-                    ++spawned;
-                    placed = true;
-                    break;
-                }
-            }
-        }
-        if (!placed) {
+        } else {
             delete newEnemy;
         }
     }
@@ -1149,9 +1182,9 @@ void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
     }
 
     if (winner == Unit::Owner::PlayerCtrl) {
-        m_enemyHp = qMax(0, m_enemyHp - damage);
+        m_enemyDefeatedWaves = m_enemyDefeatedWaves + 1;
         emit enemyInfoChanged();
-        if (m_enemyHp <= 0) {
+        if (m_enemyDefeatedWaves >= m_enemyMaxWaves) {
             emit enemyDefeated(); 
         }
         return;
@@ -1234,8 +1267,10 @@ void Game::battleTick()
         m_inBattle = false;
         emit battleStateChanged(m_inBattle);
         
-        if (m_enemyHp > 0 && m_player.getHp() > 0) {
+        if (m_enemyDefeatedWaves < m_enemyMaxWaves && m_player.getHp() > 0) {
             startNextRound();
+        } else if (m_enemyDefeatedWaves >= m_enemyMaxWaves) {
+            startNextStage();
         }
     }
 }

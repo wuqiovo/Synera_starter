@@ -59,10 +59,10 @@ struct GameState
 {
     // 玩家状态。
     PlayerState player;
-    // 敌方总血量。
-    int enemyHp = 100;
-    // 敌方最大总血量。
-    int enemyMaxHp = 100;
+    // 已战胜的敌方波次。
+    int enemyDefeatedWaves = 0;
+    // 敌方最大波次。
+    int enemyMaxWaves = 5;
     // 是否处于战斗阶段。
     bool inBattle = false;
 
