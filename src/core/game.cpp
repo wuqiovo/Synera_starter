@@ -929,7 +929,8 @@ bool Game::canDropOnBoard(Unit* unit, const QPoint& target) const
     if (!m_board.isValidPosition(target) || !m_board.isPlayerHalf(target)) {
         return false;
     }
-    if (m_board.hasUnitAt(target)) {
+    Unit* targetUnit = m_board.getUnitAt(target);
+    if (targetUnit && targetUnit->owner() != Unit::Owner::PlayerCtrl) {
         return false;
     }
     return true;
@@ -942,11 +943,7 @@ bool Game::canDropOnBench(Unit* unit, int slot, bool fromBench) const
         return false;
     }
 
-    if (fromBench) {
-        return true;
-    }
-
-    return !m_bench.hasUnitAt(slot);
+    return true;
 }
 
 // 对应阶段一「半场划分与地块占用规则」以及「非法放置处理」的统一合法性校验。
@@ -984,6 +981,16 @@ bool Game::applyDrop(int unitId, const QPoint& target)
         return false;
     }
 
+    Unit* targetUnit = m_board.getUnitAt(target);
+    if (targetUnit && targetUnit != unit) {
+        const QPoint sourcePos = unit->position();
+        m_board.removeUnit(targetUnit);
+        m_board.removeUnit(unit);
+        m_board.addUnit(targetUnit, sourcePos);
+        m_board.addUnit(unit, target);
+        return true;
+    }
+
     return m_board.moveUnit(unit, target);
 }
 
@@ -996,7 +1003,16 @@ bool Game::transferUnitFromBoardToBench(int unitId, int benchSlot)
         return false;
     }
 
+    Unit* targetUnit = m_bench.unitAt(benchSlot);
     const QPoint boardPos = unit->position();
+
+    if (targetUnit) {
+        m_bench.removeUnit(targetUnit);
+        m_board.removeUnit(unit);
+        m_board.addUnit(targetUnit, boardPos);
+        m_bench.addUnit(unit, benchSlot);
+        return true;
+    }
 
     if (!m_board.removeUnit(unit)) {
         return false;
@@ -1018,6 +1034,17 @@ bool Game::transferUnitFromBenchToBoard(int unitId, const QPoint& target)
     Unit* unit = findUnitById(unitId);
     if (!unit || !m_bench.contains(unit)) {
         return false;
+    }
+
+    const int benchSlot = m_bench.slotOf(unit);
+    Unit* targetUnit = m_board.getUnitAt(target);
+
+    if (targetUnit) {
+        m_board.removeUnit(targetUnit);
+        m_bench.removeUnit(unit);
+        m_bench.addUnit(targetUnit, benchSlot);
+        m_board.addUnit(unit, target);
+        return true;
     }
 
     if (!m_board.addUnit(unit, target)) {

@@ -91,13 +91,19 @@ public:
     bool isStunned() const { return m_stunTurns > 0; }
     void setDamageOutputReduction(int turns, float ratio);
     bool hasDamageOutputReduction() const { return m_damageOutputReductionTurns > 0; }
+    void setVunerableTurns(int turns) { m_vunerableTurns = turns > 0 ? turns : 0; }
+    bool isVunerable() const { return m_vunerableTurns > 0; }
+    void setVunerableDamageIncreaseRatio(float ratio) { m_vunerableDamageIncreaseRatio = ratio > 0.0f ? ratio : 0.0f; }
     void takeDamage(int damage);
+
+protected:
+    Unit* m_target;
+    Status m_status;
+    int adjustDamageOutput(int damage) const;
 
 private:
     static int s_nextId;
-
-protected:
-    int adjustDamageOutput(int damage) const;
+    
     int m_id;
     QString m_name;
     QPoint m_position;
@@ -110,11 +116,11 @@ protected:
     int m_level;
     Owner m_owner;
     Trait m_trait; // 羁绊类型
-    Status m_status;
-    Unit* m_target; // 当前目标单位指针
     int m_stunTurns;
     int m_damageOutputReductionTurns;
     float m_damageOutputReductionRatio;
+    int m_vunerableTurns;
+    float m_vunerableDamageIncreaseRatio;
 };
 
 class Warrior : public Unit
