@@ -120,7 +120,7 @@ protected:
 class Warrior : public Unit
 {
 public:
-    explicit Warrior(const QString& name = QString("Warrior"), int hp = -1, int atk = -1);
+    explicit Warrior(const QString& name = QString("Warrior"), int hp = 150, int atk = 10);
     void act(Game* game) override;
     void skill(Game* game) override;
 };
@@ -128,7 +128,7 @@ public:
 class Mage : public Unit
 {
 public:    
-    explicit Mage(const QString& name = QString("Mage"), int hp = -1, int atk = -1);
+    explicit Mage(const QString& name = QString("Mage"), int hp = 80, int atk = 15);
     void act(Game* game) override;
     void skill(Game* game) override;
 };
@@ -136,7 +136,15 @@ public:
 class Archer : public Unit
 {
 public:
-    explicit Archer(const QString& name = QString("Archer"), int hp = -1, int atk = -1);
+    explicit Archer(const QString& name = QString("Archer"), int hp = 100, int atk = 10);
+    void act(Game* game) override;
+    void skill(Game* game) override;
+};
+
+class Boss : public Unit
+{
+public:
+    explicit Boss(const QString& name = QString("Boss"), int hp = 200, int atk = 20);
     void act(Game* game) override;
     void skill(Game* game) override;
 };

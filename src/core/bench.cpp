@@ -104,6 +104,17 @@ int Bench::firstEmptySlot() const
     return -1;
 }
 
+int Bench::unitCount() const
+{
+    int count = 0;
+    for (const Unit* unit : m_slots) {
+        if (unit) {
+            ++count;
+        }
+    }
+    return count;
+}
+
 // 备战区状态重置：清空所有槽位与单位到槽位映射。
 void Bench::clear()
 {

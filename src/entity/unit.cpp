@@ -336,12 +336,6 @@ void Unit::normalIdleBehavior(Game* game)
     if (m_mana > m_maxMana) {
         m_mana = m_maxMana;
     }
-    /* 改为在pre阶段寻找目标
-       每次行动之前自动寻找目标
-    if (!m_target || m_target->status() == Status::Dead) {
-        m_target = findTarget(game);
-    }
-    */
     
     if (m_target && distanceTo(m_target) > range()) {
         setStatus(Status::Moving);
@@ -652,4 +646,74 @@ void Archer::skill(Game* game)
         return;
     }
     m_target->setDamageOutputReduction(2, 0.2f);
+}
+
+Boss::Boss(const QString& name, int hp, int atk)
+    : Unit(name, Trait::None, hp, atk)
+{
+    setRange(1);     // Boss近战攻击
+
+    if (hp >= 0) {
+        setHp(hp);
+        setMaxHp(hp);
+    }
+    if (atk >= 0) {
+        setAtk(atk);
+    }
+}
+
+void Boss::act(Game* game)
+{
+    // Boss的行为可以在这里实现
+    if (!prepareForAct(game)) {
+        return;
+    }
+
+    if (!game || !game->isUnitOnBoard(this)) {
+        return;
+    }
+    
+    switch (m_status) {
+    case Status::Idle:
+        normalIdleBehavior(game);
+        break;
+    case Status::Moving:
+        if (!m_target) {
+            setStatus(Status::Idle);
+            break;
+        }
+        normalMoveBehavior(game);
+        break;
+    case Status::Attacking:
+        if (m_target) {
+            attackTarget(m_target);
+            resolveAttack(game);
+        } else {
+            setStatus(Status::Idle);    
+        }
+        break;
+    case Status::Casting:
+        skill(game);
+        resolveAttack(game);
+        setMana(0);
+        break;
+    case Status::Dead:
+        if (game) {
+            game->requestRemoveUnit(this);
+        }
+        break;
+    }
+}
+
+void Boss::skill(Game* game)
+{
+    // 为自己永久增加2点攻击力，并使目标陷入易伤状态（受伤增加30%）持续两回合
+    if (!m_target || !game) {
+        return;
+    }
+    if (!game->isUnitOnBoard(m_target)) {
+        return;
+    }
+
+    setAtk(atk() + 2);
 }

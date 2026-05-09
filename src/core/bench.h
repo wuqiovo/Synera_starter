@@ -23,6 +23,7 @@ public:
 
     int capacity() const;
     int firstEmptySlot() const;
+    int unitCount() const;
 
     void clear();
 

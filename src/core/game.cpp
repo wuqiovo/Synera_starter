@@ -135,7 +135,10 @@ void Game::startNextStage()
 void Game::startNextRound()
 {
     ++m_round;
+    clearEnemyUnits();
+    movePlayerUnitsBack();
     spawnEnemiesForCurrentRound();
+    createPlayerUnitForCurrentRound();
     syncFromBoard();
     refreshTraitCounts();
     emit stageRoundChanged();
@@ -655,6 +658,105 @@ void Game::createStarterUnitsIfNeeded()
     m_units.append(player3);
 }
 
+void Game::clearEnemyUnits()
+{
+    if (m_round == 1) {
+        return;
+    }
+
+    for (Unit* unit : m_units) {
+        if (unit && unit->owner() == Unit::Owner::EnemyCtrl) {
+            requestRemoveUnit(unit);
+        }
+    }
+
+    flushUnitRemovals();
+
+    emit enemyInfoChanged();
+}
+
+void Game::movePlayerUnitsBack()
+{
+    if (m_round == 1) {
+        return;
+    }
+
+    for (Unit* unit : m_units) {
+        bool finished = false;
+        if (unit && unit->owner() == Unit::Owner::PlayerCtrl) {
+            for (int row = Board::ROWS - 1; row >= Board::ROWS / 2; --row) {
+                for (int col = 0; col < Board::COLS; ++col) {
+                    if (m_board.moveUnit(unit, QPoint(col, row))) {
+                        unit->setHp(unit->maxHp()); // 回满血
+                        unit->setMana(unit->maxMana()); // 回满蓝
+                        finished = true;
+                        break;
+                    }
+                }
+                
+                if (finished) {
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Game::createPlayerUnitForCurrentRound()
+{
+    if (m_round == 1) {
+        return;
+    }
+
+    const int playerUnitCount = countAliveUnits(Unit::Owner::PlayerCtrl)
+                                + m_bench.unitCount();
+    const int enemyUnitCount = countAliveUnits(Unit::Owner::EnemyCtrl);
+    const int spawnCount = enemyUnitCount - playerUnitCount;
+
+    auto attachUnitItemFor = [this](Unit* unit) {
+        UnitItem* unitItem = new UnitItem(unit);
+        unitItem->setZValue(kZUnit);
+        m_scene->addItem(unitItem);
+        m_unitItems.push_back(unitItem);
+        m_unitItemById[unit->id()] = unitItem;
+
+        connect(unitItem, &UnitItem::dragStarted,
+                this, &Game::handleDragStarted);
+        connect(unitItem, &UnitItem::dragMoved,
+                this, &Game::handleDragMoved);
+        connect(unitItem, &UnitItem::dragDropped,
+                this, &Game::handleDropCommand);
+    };
+
+    for (int i = 0; i < spawnCount; ++i) {
+        Unit* newUnit = nullptr;
+        if (i % 3 == 0) {
+            newUnit = new Warrior(QString::fromUtf8("增援战士"), 150, 10);
+        } else if (i % 3 == 1) {
+            newUnit = new Archer(QString::fromUtf8("增援弓手"), 100, 10);
+        } else {
+            newUnit = new Mage(QString::fromUtf8("增援法师"), 80, 15);
+        }
+        newUnit->setOwner(Unit::Owner::PlayerCtrl);
+        bool isPlaced = false;
+
+        for (int row = Board::ROWS - 1; row >= Board::ROWS / 2; --row) {
+            for (int col = 0; col < Board::COLS; ++col) {
+                if (m_board.addUnit(newUnit, QPoint(col, row))) {
+                    attachUnitItemFor(newUnit);
+                    isPlaced = true;
+                    break;
+                }
+            }
+        }
+
+        if (!isPlaced) {
+            delete newUnit;
+        }
+    }    
+
+    emit playerInfoChanged();
+}
 
 // 敌方轮次生成：随回合数增加敌方单位数量（最多5个），并根据阶段属性增幅，第5波追加1个最终Boss。
 void Game::spawnEnemiesForCurrentRound()
@@ -704,10 +806,7 @@ void Game::spawnEnemiesForCurrentRound()
 
         if (isBoss) {
             // 后续替换为独立的 Boss 类，目前使用基础 Unit 占位
-            newEnemy = new Unit(QString::fromUtf8("最终Boss(占位)"), Unit::Trait::None);
-            newEnemy->setHp(500 * multiplier);
-            newEnemy->setMaxHp(500 * multiplier);
-            newEnemy->setAtk(30 * multiplier);
+            newEnemy = new Boss(QString::fromUtf8("最终Boss(占位)"), 200 * multiplier, 20 * multiplier);
 
             prefArr = bossPositions;
             prefCount = 5;

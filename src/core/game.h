@@ -76,6 +76,9 @@ private:
     GameState captureState() const;
     void createStarterUnitsIfNeeded();
     void spawnEnemiesForCurrentRound();
+    void clearEnemyUnits();
+    void movePlayerUnitsBack();
+    void createPlayerUnitForCurrentRound();
 
     Unit* findUnitById(int unitId) const;
     GridItem* findGridItem(const QPoint& gridPos) const;
