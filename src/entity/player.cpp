@@ -6,6 +6,6 @@ Player::Player(const QString& name)
     , hp(100)
     , gold(5)
     , level(1)
-    , populationCap(10)
+    , populationCap(6)
     , curStage(1)
 {}

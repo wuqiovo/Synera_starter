@@ -138,11 +138,26 @@ CMakeFiles/Synera_Starter.dir/src/core/game.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Synera_Starter.dir/src/core/game.cpp.s"
 	D:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\PA\Synera_starter\src\core\game.cpp -o CMakeFiles\Synera_Starter.dir\src\core\game.cpp.s
 
+CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj: CMakeFiles/Synera_Starter.dir/flags.make
+CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj: CMakeFiles/Synera_Starter.dir/includes_CXX.rsp
+CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj: D:/PA/Synera_starter/src/core/shop.cpp
+CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj: CMakeFiles/Synera_Starter.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj"
+	D:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj -MF CMakeFiles\Synera_Starter.dir\src\core\shop.cpp.obj.d -o CMakeFiles\Synera_Starter.dir\src\core\shop.cpp.obj -c D:\PA\Synera_starter\src\core\shop.cpp
+
+CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.i"
+	D:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E D:\PA\Synera_starter\src\core\shop.cpp > CMakeFiles\Synera_Starter.dir\src\core\shop.cpp.i
+
+CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.s"
+	D:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S D:\PA\Synera_starter\src\core\shop.cpp -o CMakeFiles\Synera_Starter.dir\src\core\shop.cpp.s
+
 CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj: CMakeFiles/Synera_Starter.dir/flags.make
 CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj: CMakeFiles/Synera_Starter.dir/includes_CXX.rsp
 CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj: D:/PA/Synera_starter/src/entity/player.cpp
 CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj: CMakeFiles/Synera_Starter.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj"
 	D:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj -MF CMakeFiles\Synera_Starter.dir\src\entity\player.cpp.obj.d -o CMakeFiles\Synera_Starter.dir\src\entity\player.cpp.obj -c D:\PA\Synera_starter\src\entity\player.cpp
 
 CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.i: cmake_force
@@ -157,7 +172,7 @@ CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj: CMakeFiles/Synera_Starter
 CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj: CMakeFiles/Synera_Starter.dir/includes_CXX.rsp
 CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj: D:/PA/Synera_starter/src/entity/unit.cpp
 CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj: CMakeFiles/Synera_Starter.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj"
 	D:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj -MF CMakeFiles\Synera_Starter.dir\src\entity\unit.cpp.obj.d -o CMakeFiles\Synera_Starter.dir\src\entity\unit.cpp.obj -c D:\PA\Synera_starter\src\entity\unit.cpp
 
 CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.i: cmake_force
@@ -172,7 +187,7 @@ CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj: CMakeFiles/Synera_Star
 CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj: CMakeFiles/Synera_Starter.dir/includes_CXX.rsp
 CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj: D:/PA/Synera_starter/src/gui/gamewindow.cpp
 CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj: CMakeFiles/Synera_Starter.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj"
 	D:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj -MF CMakeFiles\Synera_Starter.dir\src\gui\gamewindow.cpp.obj.d -o CMakeFiles\Synera_Starter.dir\src\gui\gamewindow.cpp.obj -c D:\PA\Synera_starter\src\gui\gamewindow.cpp
 
 CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.i: cmake_force
@@ -187,7 +202,7 @@ CMakeFiles/Synera_Starter.dir/src/gui/griditem.cpp.obj: CMakeFiles/Synera_Starte
 CMakeFiles/Synera_Starter.dir/src/gui/griditem.cpp.obj: CMakeFiles/Synera_Starter.dir/includes_CXX.rsp
 CMakeFiles/Synera_Starter.dir/src/gui/griditem.cpp.obj: D:/PA/Synera_starter/src/gui/griditem.cpp
 CMakeFiles/Synera_Starter.dir/src/gui/griditem.cpp.obj: CMakeFiles/Synera_Starter.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/Synera_Starter.dir/src/gui/griditem.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/Synera_Starter.dir/src/gui/griditem.cpp.obj"
 	D:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Synera_Starter.dir/src/gui/griditem.cpp.obj -MF CMakeFiles\Synera_Starter.dir\src\gui\griditem.cpp.obj.d -o CMakeFiles\Synera_Starter.dir\src\gui\griditem.cpp.obj -c D:\PA\Synera_starter\src\gui\griditem.cpp
 
 CMakeFiles/Synera_Starter.dir/src/gui/griditem.cpp.i: cmake_force
@@ -202,7 +217,7 @@ CMakeFiles/Synera_Starter.dir/src/gui/startwindow.cpp.obj: CMakeFiles/Synera_Sta
 CMakeFiles/Synera_Starter.dir/src/gui/startwindow.cpp.obj: CMakeFiles/Synera_Starter.dir/includes_CXX.rsp
 CMakeFiles/Synera_Starter.dir/src/gui/startwindow.cpp.obj: D:/PA/Synera_starter/src/gui/startwindow.cpp
 CMakeFiles/Synera_Starter.dir/src/gui/startwindow.cpp.obj: CMakeFiles/Synera_Starter.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/Synera_Starter.dir/src/gui/startwindow.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/Synera_Starter.dir/src/gui/startwindow.cpp.obj"
 	D:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Synera_Starter.dir/src/gui/startwindow.cpp.obj -MF CMakeFiles\Synera_Starter.dir\src\gui\startwindow.cpp.obj.d -o CMakeFiles\Synera_Starter.dir\src\gui\startwindow.cpp.obj -c D:\PA\Synera_starter\src\gui\startwindow.cpp
 
 CMakeFiles/Synera_Starter.dir/src/gui/startwindow.cpp.i: cmake_force
@@ -217,7 +232,7 @@ CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.obj: CMakeFiles/Synera_Starte
 CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.obj: CMakeFiles/Synera_Starter.dir/includes_CXX.rsp
 CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.obj: D:/PA/Synera_starter/src/gui/unititem.cpp
 CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.obj: CMakeFiles/Synera_Starter.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.obj"
 	D:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.obj -MF CMakeFiles\Synera_Starter.dir\src\gui\unititem.cpp.obj.d -o CMakeFiles\Synera_Starter.dir\src\gui\unititem.cpp.obj -c D:\PA\Synera_starter\src\gui\unititem.cpp
 
 CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.i: cmake_force
@@ -232,7 +247,7 @@ CMakeFiles/Synera_Starter.dir/src/main.cpp.obj: CMakeFiles/Synera_Starter.dir/fl
 CMakeFiles/Synera_Starter.dir/src/main.cpp.obj: CMakeFiles/Synera_Starter.dir/includes_CXX.rsp
 CMakeFiles/Synera_Starter.dir/src/main.cpp.obj: D:/PA/Synera_starter/src/main.cpp
 CMakeFiles/Synera_Starter.dir/src/main.cpp.obj: CMakeFiles/Synera_Starter.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/Synera_Starter.dir/src/main.cpp.obj"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Building CXX object CMakeFiles/Synera_Starter.dir/src/main.cpp.obj"
 	D:\Qt\Tools\mingw1310_64\bin\g++.exe $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/Synera_Starter.dir/src/main.cpp.obj -MF CMakeFiles\Synera_Starter.dir\src\main.cpp.obj.d -o CMakeFiles\Synera_Starter.dir\src\main.cpp.obj -c D:\PA\Synera_starter\src\main.cpp
 
 CMakeFiles/Synera_Starter.dir/src/main.cpp.i: cmake_force
@@ -249,6 +264,7 @@ Synera_Starter_OBJECTS = \
 "CMakeFiles/Synera_Starter.dir/src/core/bench.cpp.obj" \
 "CMakeFiles/Synera_Starter.dir/src/core/board.cpp.obj" \
 "CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj" \
+"CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj" \
 "CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj" \
 "CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj" \
 "CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj" \
@@ -264,6 +280,7 @@ Synera_Starter.exe: CMakeFiles/Synera_Starter.dir/Synera_Starter_autogen/mocs_co
 Synera_Starter.exe: CMakeFiles/Synera_Starter.dir/src/core/bench.cpp.obj
 Synera_Starter.exe: CMakeFiles/Synera_Starter.dir/src/core/board.cpp.obj
 Synera_Starter.exe: CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj
+Synera_Starter.exe: CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj
 Synera_Starter.exe: CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj
 Synera_Starter.exe: CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj
 Synera_Starter.exe: CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj
@@ -279,7 +296,7 @@ Synera_Starter.exe: D:/Qt/6.11.0/mingw_64/lib/libQt6EntryPoint.a
 Synera_Starter.exe: CMakeFiles/Synera_Starter.dir/linkLibs.rsp
 Synera_Starter.exe: CMakeFiles/Synera_Starter.dir/objects1.rsp
 Synera_Starter.exe: CMakeFiles/Synera_Starter.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable Synera_Starter.exe"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=D:\PA\Synera_starter\build\CMakeFiles --progress-num=$(CMAKE_PROGRESS_14) "Linking CXX executable Synera_Starter.exe"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles\Synera_Starter.dir\link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

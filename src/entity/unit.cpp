@@ -288,6 +288,13 @@ bool Unit::prepareForAct(Game* game)
         }
     }
 
+    if (m_vunerableTurns > 0) {
+        --m_vunerableTurns;
+        if (m_vunerableTurns == 0) {
+            m_vunerableDamageIncreaseRatio = 0.0f;
+        }
+    }
+
     if (m_status != Status::Dead && m_status != Status::Attacking && m_status != Status::Casting) {
         m_target = findTarget(game);
     }
@@ -396,6 +403,9 @@ int Unit::adjustDamageOutput(int damage) const
 
 void Unit::takeDamage(int damage)
 {
+    if (m_vunerableDamageIncreaseRatio > 0.0f) {
+        damage = static_cast<int>(damage * (1.0f + m_vunerableDamageIncreaseRatio));
+    }
     setHp(m_hp - damage);
     if (m_hp <= 0) {
         setStatus(Status::Dead);
@@ -707,7 +717,7 @@ void Boss::act(Game* game)
 
 void Boss::skill(Game* game)
 {
-    // 为自己永久增加2点攻击力，并使目标陷入易伤状态（受伤增加30%）持续两回合
+    // 为自己永久增加5点攻击力，并使目标陷入易伤状态（受伤增加30%）持续两回合
     if (!m_target || !game) {
         return;
     }
@@ -715,5 +725,7 @@ void Boss::skill(Game* game)
         return;
     }
 
-    setAtk(atk() + 2);
+    setAtk(atk() + 5);
+    m_target->setVunerableTurns(2);
+    m_target->setVunerableDamageIncreaseRatio(0.3f);
 }

@@ -7,6 +7,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/Synera_Starter.dir/src/core/board.cpp.obj.d"
   "CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj"
   "CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj.d"
+  "CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj"
+  "CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj.d"
   "CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj"
   "CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj.d"
   "CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj"

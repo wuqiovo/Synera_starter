@@ -82,7 +82,7 @@ void Game::reset()
     m_player.setHp(100);
     m_player.setGold(5);
     m_player.setLevel(1);
-    m_player.setPopulationCap(10);
+    m_player.setPopulationCap(6);
     m_player.setCurStage(m_stage);
 
     // 新 stage 初始化：清空所有历史单位后重新生成初始玩家单位。

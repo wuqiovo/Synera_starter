@@ -269,6 +269,7 @@ void GameWindow::setupUI()
     m_mainLayout->addWidget(infoBar, 0);
     m_mainLayout->addWidget(m_view, 1);
 
+    // 控制栏布局：左侧部署/调试按钮，右侧保存退出按钮，中间预留扩展空间。
     QWidget* controlBar = new QWidget(this);
     QHBoxLayout* controlLayout = new QHBoxLayout(controlBar);
     controlLayout->setContentsMargins(0, 0, 0, 0);

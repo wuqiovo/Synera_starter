@@ -250,6 +250,30 @@ src/core/game.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/core/game.cpp.s
 .PHONY : src/core/game.cpp.s
 
+src/core/shop.obj: src/core/shop.cpp.obj
+.PHONY : src/core/shop.obj
+
+# target to build an object file
+src/core/shop.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj
+.PHONY : src/core/shop.cpp.obj
+
+src/core/shop.i: src/core/shop.cpp.i
+.PHONY : src/core/shop.i
+
+# target to preprocess a source file
+src/core/shop.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.i
+.PHONY : src/core/shop.cpp.i
+
+src/core/shop.s: src/core/shop.cpp.s
+.PHONY : src/core/shop.s
+
+# target to generate assembly for a file
+src/core/shop.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.s
+.PHONY : src/core/shop.cpp.s
+
 src/entity/player.obj: src/entity/player.cpp.obj
 .PHONY : src/entity/player.obj
 
@@ -441,6 +465,9 @@ help:
 	@echo ... src/core/game.obj
 	@echo ... src/core/game.i
 	@echo ... src/core/game.s
+	@echo ... src/core/shop.obj
+	@echo ... src/core/shop.i
+	@echo ... src/core/shop.s
 	@echo ... src/entity/player.obj
 	@echo ... src/entity/player.i
 	@echo ... src/entity/player.s
