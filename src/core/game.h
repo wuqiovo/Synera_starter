@@ -12,6 +12,7 @@
 #include <vector>
 #include "board.h"
 #include "bench.h"
+#include "shop.h"
 #include "entity/player.h"
 
 class Unit;
@@ -60,7 +61,13 @@ public:
     bool moveUnitDuringBattle(Unit* unit, const QPoint& target);
     bool isUnitOnBoard(const Unit* unit) const;
 
+    void addUnitFromShop(Unit* unit);
+
     const QList<Unit*>& units() const { return m_units; }
+
+    Bench* bench() { return &m_bench; }
+    Board* board() { return &m_board; }
+    Shop* shop() { return &m_shop; }
     
 signals:
     void playerInfoChanged();
@@ -93,7 +100,10 @@ private:
     bool transferUnitFromBoardToBench(int unitId, int benchSlot);
     bool transferUnitFromBenchToBoard(int unitId, const QPoint& target);
     bool moveUnitWithinBench(int fromSlot, int toSlot);
+    
     void buildScene();
+    void buildShopUI();
+    void updateShopUI();
     void syncFromBoard();
     void refreshTraitCounts();
 
@@ -128,6 +138,9 @@ private:
 
     // 备战区槽位数据（未上阵单位的容器，默认 8 格）。
     Bench m_bench;
+    
+    // 商店逻辑数据
+    Shop m_shop;
 
     // 游戏中托管的全部单位对象（用于生命周期管理与按 ID 查找）。
     QList<Unit*> m_units;
@@ -146,6 +159,15 @@ private:
     std::vector<QRectF> m_benchRects;
     // 备战区标签文字。
     QGraphicsSimpleTextItem* m_benchLabel;
+    
+    // 商店UI的代理
+    class QGraphicsProxyWidget* m_shopProxy = nullptr;
+    // 商店内5个商品格子的布局指针，用于updateShopUI快速刷新
+    std::vector<class QVBoxLayout*> m_shopProductLayouts;
+    // 商店刷新按钮指针，用于更新启用状态
+    class QPushButton* m_shopRefreshBtn = nullptr;
+    // 商店出售区域判定矩形(场景坐标)
+    QRectF m_shopSellRect;
 
     // 当前是否处于拖拽流程中。
     bool m_dragActive;

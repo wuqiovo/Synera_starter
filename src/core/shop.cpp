@@ -1,1 +1,109 @@
 #include "shop.h"
+#include "game.h"
+#include <QRandomGenerator>
+
+Shop::Shop(int size)
+    : m_products(size > 0 ? size : 5, nullptr)
+{
+    generate();
+}
+
+void Shop::createUnit(int index)
+{
+    int traitIndex = QRandomGenerator::global()->bounded((int)traits.size());
+    UnitInfo* info = new UnitInfo{
+        unitNames[traitIndex],
+        traits[traitIndex],
+        hpValues[traitIndex],
+        atkValues[traitIndex]
+    };
+    if (m_products[index]) {
+        delete m_products[index];
+    }
+    m_products[index] = info;
+}
+
+void Shop::generate()
+{
+    for (int i = 0; i < m_products.size(); ++i) {
+        createUnit(i);
+    }
+}
+
+void Shop::refresh(Game* game)
+{
+    game->player()->costGold(2); // 刷新需要花费2金币
+    generate();
+}
+
+void Shop::buyUnit(int index, Game* game)
+{
+    if (index < 0 || index >= m_products.size()) {
+        return; // 无效索引
+    }
+    UnitInfo* info = m_products[index];
+    if (!info) {
+        return; // 没有商品
+    }
+    if (game->player()->Gold() < 3) {
+        return; // 金钱不足
+    }
+
+    game->player()->costGold(3); // 购买需要花费3金币
+    
+    Unit* newUnit = nullptr;
+    if (info->trait == Unit::Trait::Warrior) {
+        newUnit = new Warrior(info->name, info->hp, info->atk);
+    } else if (info->trait == Unit::Trait::Mage) {
+        newUnit = new Mage(info->name, info->hp, info->atk);
+    } else if (info->trait == Unit::Trait::Archer) {
+        newUnit = new Archer(info->name, info->hp, info->atk);
+    } else {
+        newUnit = new Unit(info->name, info->trait, info->hp, info->atk);
+    }
+    
+    newUnit->setOwner(Unit::Owner::PlayerCtrl);
+
+    // 试图将单位放入备战区，若备战区已满则购买失败
+    bool placed = false;
+    for (int i = game->bench()->capacity() - 1; i >= 0; --i) {
+        if (!game->bench()->hasUnitAt(i)) {
+            if (game->bench()->addUnit(newUnit, i)) {
+                // Must add to game's unit list to be managed and rendered!
+                game->addUnitFromShop(newUnit);
+                delete info;
+                m_products[index] = nullptr;
+                placed = true;
+            }
+            break;
+        }
+    }
+
+    if (!placed) {
+        game->player()->addGold(3); // 退还金钱
+        delete newUnit; // 购买失败，删除创建的单位
+    }
+}
+
+void Shop::upgradeCapacity(Game* game)
+{
+    if (!game || game->player()->Gold() < 5) {
+        return; // 金钱不足
+    }
+    
+    game->player()->costGold(5); // 升级需要花费5金币
+    game->player()->addPopulationCap(2); // 每次升级增加2点人口上限
+}
+
+void Shop::sellUnit(Unit* unit, Game* game)
+{
+    if (!unit || !game) {
+        return; // 无效单位或游戏对象
+    }
+
+    // 卖出单位获得1金币
+    game->player()->addGold(1);
+
+    // Call game's request Remove Unit to properly clean up from board, bench, and scene without crashing
+    game->requestRemoveUnit(unit);
+}

@@ -38,7 +38,49 @@ Unit::Unit(const QString& name, Trait trait, int hp, int atk)
 
 void Unit::act(Game* game)
 {
-    // 默认行为：根据状态执行相应的逻辑
+    if (!prepareForAct(game)) {
+        return;
+    }
+
+    if (!game || !game->isUnitOnBoard(this)) {
+        return;
+    }
+    
+    switch (m_status) {
+    case Status::Idle:
+        // 在空闲状态下寻找目标
+        // 不break，继续执行后续状态逻辑
+        normalIdleBehavior(game);
+    case Status::Moving:
+        // 移动中可能更新位置、检查路径等
+        if (!m_target) {
+            setStatus(Status::Idle);
+            break;
+        }
+        normalMoveBehavior(game);
+        break;
+    case Status::Attacking:
+        // 攻击中可能执行攻击逻辑、计算伤害等
+        if (m_target) {
+            attackTarget(m_target);
+            resolveAttack(game);
+        } else {
+            setStatus(Status::Idle);    
+        }        
+        break;
+    case Status::Casting:
+        // 留给战士特殊技能
+        skill(game);
+        resolveAttack(game);
+        setMana(0);
+        break;
+    case Status::Dead:
+        // 已死亡状态下可能播放死亡动画、移除单位等
+        if (game) {
+            game->requestRemoveUnit(this);
+        }
+        break;
+    }
 }
 
 void Unit::upgrade()
@@ -428,54 +470,6 @@ Warrior::Warrior(const QString& name, int hp, int atk)
     // setHp(1000); // 调试高Hp
 }
 
-void Warrior::act(Game* game)
-{
-    // 战士特有的行为可以在这里实现
-    if (!prepareForAct(game)) {
-        return;
-    }
-
-    if (!game || !game->isUnitOnBoard(this)) {
-        return;
-    }
-    
-    switch (m_status) {
-    case Status::Idle:
-        // 在空闲状态下寻找目标
-        // 不break，继续执行后续状态逻辑
-        normalIdleBehavior(game);
-    case Status::Moving:
-        // 移动中可能更新位置、检查路径等
-        if (!m_target) {
-            setStatus(Status::Idle);
-            break;
-        }
-        normalMoveBehavior(game);
-        break;
-    case Status::Attacking:
-        // 攻击中可能执行攻击逻辑、计算伤害等
-        if (m_target) {
-            attackTarget(m_target);
-            resolveAttack(game);
-        } else {
-            setStatus(Status::Idle);    
-        }        
-        break;
-    case Status::Casting:
-        // 留给战士特殊技能
-        skill(game);
-        resolveAttack(game);
-        setMana(0);
-        break;
-    case Status::Dead:
-        // 已死亡状态下可能播放死亡动画、移除单位等
-        if (game) {
-            game->requestRemoveUnit(this);
-        }
-        break;
-    }
-}
-
 void Warrior::skill(Game* game)
 {
     // 战士的特殊技能实现：单体击晕1回合
@@ -504,55 +498,6 @@ Mage::Mage(const QString& name, int hp, int atk)
         setAtk(atk);
     }
     // setHp(1000); // 调试高Hp
-}
-
-void Mage::act(Game* game)
-{
-    // 法师特有的行为可以在这里实现
-    if (!prepareForAct(game)) {
-        return;
-    }
-
-    if (!game || !game->isUnitOnBoard(this)) {
-        return;
-    }
-    
-    switch (m_status) {
-    case Status::Idle:
-        // 在空闲状态下寻找目标
-        // 不break，继续执行后续状态逻辑
-        normalIdleBehavior(game);
-    case Status::Moving:
-        // 移动中可能更新位置、检查路径等
-        if (!m_target) {
-            setStatus(Status::Idle);
-            break;
-        }
-        normalMoveBehavior(game);
-        break;
-    case Status::Attacking:
-        // 攻击中可能执行攻击逻辑、计算伤害等
-        // 有待补充：攻击动画、技能效果等
-        if (m_target) {
-            attackTarget(m_target);
-            resolveAttack(game);
-        } else {
-            setStatus(Status::Idle);    
-        }
-        break;
-    case Status::Casting:
-        // 满蓝时施放特殊技能
-        skill(game);
-        resolveAttack(game);
-        setMana(0);
-        break;
-    case Status::Dead:
-        // 已死亡状态下可能播放死亡动画、移除单位等
-        if (game) {
-            game->requestRemoveUnit(this);
-        }
-        break;
-    }
 }
 
 void Mage::skill(Game* game)
@@ -597,55 +542,6 @@ Archer::Archer(const QString& name, int hp, int atk)
     // setHp(1000); // 调试高Hp
 }
 
-void Archer::act(Game* game)
-{
-    // 弓箭手特有的行为可以在这里实现
-    if (!prepareForAct(game)) {
-        return;
-    }
-
-    if (!game || !game->isUnitOnBoard(this)) {
-        return;
-    }
-    
-    switch (m_status) {
-    case Status::Idle:
-        // 在空闲状态下寻找目标
-        // 不break，继续执行后续状态逻辑
-        normalIdleBehavior(game);
-    case Status::Moving:
-        // 移动中可能更新位置、检查路径等
-        if (!m_target) {
-            setStatus(Status::Idle);
-            break;
-        }
-        normalMoveBehavior(game);
-        break;
-    case Status::Attacking:
-        // 攻击中可能执行攻击逻辑、计算伤害等
-        if (m_target) {
-            attackTarget(m_target);
-            resolveAttack(game);
-        } else {
-            setStatus(Status::Idle);
-            break;
-        }        
-        break;
-    case Status::Casting:
-        // 满蓝时施放特殊技能
-        skill(game);
-        setMana(0);
-        resolveAttack(game);
-        break;
-    case Status::Dead:
-        // 已死亡状态下可能播放死亡动画、移除单位等
-        if (game) {
-            game->requestRemoveUnit(this);
-        }
-        break;
-    }
-}
-
 void Archer::skill(Game* game)
 {
     // 弓箭手的特殊技能实现：目标输出伤害降低
@@ -669,49 +565,6 @@ Boss::Boss(const QString& name, int hp, int atk)
     }
     if (atk >= 0) {
         setAtk(atk);
-    }
-}
-
-void Boss::act(Game* game)
-{
-    // Boss的行为可以在这里实现
-    if (!prepareForAct(game)) {
-        return;
-    }
-
-    if (!game || !game->isUnitOnBoard(this)) {
-        return;
-    }
-    
-    switch (m_status) {
-    case Status::Idle:
-        normalIdleBehavior(game);
-        break;
-    case Status::Moving:
-        if (!m_target) {
-            setStatus(Status::Idle);
-            break;
-        }
-        normalMoveBehavior(game);
-        break;
-    case Status::Attacking:
-        if (m_target) {
-            attackTarget(m_target);
-            resolveAttack(game);
-        } else {
-            setStatus(Status::Idle);    
-        }
-        break;
-    case Status::Casting:
-        skill(game);
-        resolveAttack(game);
-        setMana(0);
-        break;
-    case Status::Dead:
-        if (game) {
-            game->requestRemoveUnit(this);
-        }
-        break;
     }
 }
 

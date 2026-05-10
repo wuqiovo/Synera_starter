@@ -11,6 +11,12 @@
 #include <QGraphicsRectItem>
 #include <QGraphicsSimpleTextItem>
 #include <QGraphicsScene>
+#include <QGraphicsProxyWidget>
+#include <QWidget>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
 #include <QTimer>
 #include <QPen>
 #include <QtMath>
@@ -88,6 +94,7 @@ void Game::reset()
     // 新 stage 初始化：清空所有历史单位后重新生成初始玩家单位。
     clearAllUnits();
     createStarterUnitsIfNeeded();
+    m_shop.generate();
     buildScene();
     refreshTraitCounts();
 
@@ -171,7 +178,7 @@ void Game::debugEndBattle()
     m_inBattle = false;
     emit battleStateChanged(m_inBattle);
 
-    if (m_enemyDefeatedWaves < m_enemyMaxWaves && m_player.getHp() > 0) {
+    if (m_enemyDefeatedWaves < m_enemyMaxWaves && m_player.Hp() > 0) {
         startNextRound();
     } else if (m_enemyDefeatedWaves >= m_enemyMaxWaves) {
         startNextStage();
@@ -198,10 +205,10 @@ void Game::clearAllUnits()
 GameState Game::captureState() const
 {
     GameState state;
-    state.player.hp = m_player.getHp();
-    state.player.gold = m_player.getGold();
-    state.player.level = m_player.getLevel();
-    state.player.populationCap = m_player.getPopulationCap();
+    state.player.hp = m_player.Hp();
+    state.player.gold = m_player.Gold();
+    state.player.level = m_player.Level();
+    state.player.populationCap = m_player.PopulationCap();
     state.player.stage = m_stage;
     state.player.round = m_round;
     state.player.name = m_player.getPlayerName();
@@ -579,8 +586,15 @@ void Game::handleDropCommand(int unitId, const QPoint& sourceGrid, const QPointF
     clearBenchHighlights();
 
     Unit* unit = findUnitById(m_activeUnitId);
-
-    if (unit && benchSlot >= 0 && canDropOnBench(unit, benchSlot, m_sourceFromBench)) {
+    
+    // 检查拖拽目的地，优先处理商店售卖
+    if (unit && !m_inBattle && m_shopSellRect.contains(scenePos)) {
+        if (unit->owner() == Unit::Owner::PlayerCtrl) {
+            m_shop.sellUnit(unit, this);
+            flushUnitRemovals();
+            emit playerInfoChanged();
+        }
+    } else if (unit && benchSlot >= 0 && canDropOnBench(unit, benchSlot, m_sourceFromBench)) {
         if (m_sourceFromBench) {
             if (benchSlot != m_sourceBenchSlot) {
                 moveUnitWithinBench(m_sourceBenchSlot, benchSlot);
@@ -929,6 +943,12 @@ bool Game::canDropOnBoard(Unit* unit, const QPoint& target) const
     if (!m_board.isValidPosition(target) || !m_board.isPlayerHalf(target)) {
         return false;
     }
+    if (countAliveUnits(Unit::Owner::PlayerCtrl) >= m_player.PopulationCap() 
+        && !m_board.getUnitAt(target)) 
+    {
+        return false; // 人口已满且目标格无单位时，不允许放置新单位
+    }
+    
     Unit* targetUnit = m_board.getUnitAt(target);
     if (targetUnit && targetUnit->owner() != Unit::Owner::PlayerCtrl) {
         return false;
@@ -1077,6 +1097,7 @@ void Game::buildScene()
     m_benchItems.clear();
     m_benchRects.clear();
     m_benchLabel = nullptr;
+    m_shopProxy = nullptr;
 
     // 绘制六边形网格
     QRectF totalBounds;
@@ -1153,8 +1174,211 @@ void Game::buildScene()
         connect(unitItem, &UnitItem::dragDropped,
                 this, &Game::handleDropCommand);
     }
+    
+    buildShopUI();
 
+    // 调整场景边界以适应所有内容，留出额外空间避免视觉拥挤。
+    if (m_shopProxy) {
+        totalBounds = totalBounds.united(m_shopProxy->boundingRect().translated(m_shopProxy->pos()));
+    }
     m_scene->setSceneRect(totalBounds.adjusted(-40, -60, 40, 60));
+}
+
+// 清空布局内所有子控件，用于updateShopUI快速刷新商品格子内容。
+// 使用deleteLater延迟删除，避免在控件自身的槽函数中同步删除导致崩溃。
+static void clearLayout(QLayout* layout)
+{
+    if (!layout) return;
+    QLayoutItem* item;
+    while ((item = layout->takeAt(0)) != nullptr) {
+        if (item->widget()) {
+            item->widget()->hide();
+            item->widget()->deleteLater();
+        }
+        delete item;
+    }
+}
+
+void Game::buildShopUI()
+{
+    if (m_shopProxy) {
+        m_scene->removeItem(m_shopProxy);
+        m_shopProxy->deleteLater();
+        m_shopProxy = nullptr;
+    }
+
+    m_shopProductLayouts.clear();
+    m_shopRefreshBtn = nullptr;
+
+    QWidget* shopWidget = new QWidget();
+    shopWidget->setStyleSheet("QWidget { background: transparent; color: #f2f2f2; } "
+                              "QPushButton { background: #3a3a3a; border: 1px solid #555; padding: 4px; border-radius: 3px; font-size: 10px; } "
+                              "QPushButton:hover { background: #4a4a4a; } "
+                              "QLabel { font-size: 11px; }");
+    QVBoxLayout* shopLayout = new QVBoxLayout(shopWidget);
+    shopLayout->setContentsMargins(0, 0, 0, 0);
+    shopLayout->setSpacing(6);
+
+    // 商店UI标题和刷新按钮布局
+    QHBoxLayout* topLayout = new QHBoxLayout();
+    QLabel* shopTitle = new QLabel(QString::fromUtf8("商店"));
+    shopTitle->setAlignment(Qt::AlignCenter);
+    shopTitle->setStyleSheet("font-weight: bold; font-size: 16px; background: rgba(50,50,50,200); border-radius: 4px; padding: 2px;");
+
+    QPushButton* refreshBtn = new QPushButton(QString::fromUtf8("刷新商店 (2金币)"));
+    refreshBtn->setStyleSheet("background: #4a3a3a; font-size: 11px; padding: 6px;");
+    refreshBtn->setEnabled(!m_inBattle);
+    m_shopRefreshBtn = refreshBtn;
+    connect(refreshBtn, &QPushButton::clicked, this, [this]() {
+        if (!m_inBattle && m_player.Gold() >= 2) {
+            m_shop.refresh(this);
+            emit playerInfoChanged();
+            updateShopUI();
+        }
+    });
+
+    topLayout->addWidget(shopTitle);
+    topLayout->addWidget(refreshBtn);
+    shopLayout->addLayout(topLayout);
+
+    QHBoxLayout* blocksLayout = new QHBoxLayout();
+    blocksLayout->setSpacing(10);
+
+    // 五个单位格子，仅创建基础容器，内容由updateShopUI动态填充
+    for (int i = 0; i < 5; ++i) {
+        QWidget* block = new QWidget();
+        block->setFixedSize(90, 110);
+        block->setStyleSheet("background: rgba(60, 60, 80, 200); border: 2px solid #5a5a7a; border-radius: 5px;");
+        QVBoxLayout* blockLayout = new QVBoxLayout(block);
+        blockLayout->setContentsMargins(4, 4, 4, 4);
+        m_shopProductLayouts.push_back(blockLayout);
+        blocksLayout->addWidget(block);
+    }
+
+    // 升级人口格子
+    {
+        QWidget* block = new QWidget();
+        block->setFixedSize(90, 110);
+        block->setStyleSheet("background: rgba(80, 60, 60, 200); border: 2px solid #7a5a5a; border-radius: 5px;");
+        QVBoxLayout* blockLayout = new QVBoxLayout(block);
+        blockLayout->setContentsMargins(4, 4, 4, 4);
+
+        QLabel* nameLabel = new QLabel(QString::fromUtf8("升级人口"));
+        nameLabel->setAlignment(Qt::AlignCenter);
+        nameLabel->setStyleSheet("border: none; background: transparent; font-weight: bold; font-size: 12px;");
+
+        QLabel* descLabel = new QLabel(QString::fromUtf8("人口上限+2"));
+        descLabel->setAlignment(Qt::AlignCenter);
+        descLabel->setStyleSheet("border: none; background: transparent; font-size: 10px; margin-top: 2px;");
+
+        QPushButton* buyBtn = new QPushButton(QString::fromUtf8("购买 (5金币)"));
+        buyBtn->setEnabled(!m_inBattle);
+        connect(buyBtn, &QPushButton::clicked, this, [this]() {
+            if(m_inBattle) return;
+            m_shop.upgradeCapacity(this);
+            emit playerInfoChanged();
+        });
+
+        blockLayout->addWidget(nameLabel);
+        blockLayout->addWidget(descLabel);
+        blockLayout->addStretch();
+        blockLayout->addWidget(buyBtn);
+
+        blocksLayout->addWidget(block);
+    }
+
+    // 出售单位格子
+    {
+        QWidget* block = new QWidget();
+        block->setFixedSize(90, 110);
+        block->setStyleSheet("background: rgba(80, 80, 60, 200); border: 2px solid #7a7a5a; border-radius: 5px;");
+        QVBoxLayout* blockLayout = new QVBoxLayout(block);
+        blockLayout->setContentsMargins(4, 4, 4, 4);
+
+        QLabel* nameLabel = new QLabel(QString::fromUtf8("出售单位"));
+        nameLabel->setAlignment(Qt::AlignCenter);
+        nameLabel->setStyleSheet("border: none; background: transparent; font-weight: bold; font-size: 14px; color: #ffaa55;");
+
+        QLabel* descLabel = new QLabel(QString::fromUtf8("拖拽至此以出售\n获得1金币"));
+        descLabel->setAlignment(Qt::AlignCenter);
+        descLabel->setStyleSheet("border: none; background: transparent; font-size: 10px; margin-top: 10px; color: #aaaaaa;");
+
+        blockLayout->addStretch();
+        blockLayout->addWidget(nameLabel);
+        blockLayout->addWidget(descLabel);
+        blockLayout->addStretch();
+
+        blocksLayout->addWidget(block);
+    }
+
+    shopLayout->addLayout(blocksLayout);
+
+    m_shopProxy = m_scene->addWidget(shopWidget);
+    m_shopProxy->setZValue(kZGrid + 0.1);
+
+    // 根据备战区位置计算商店坐标
+    qreal boardLeft = gridToWorld(0, 0).x() - m_radius;
+    qreal shopX = boardLeft - 20;
+    qreal shopY = m_benchTop + 90.0;
+    m_shopProxy->setPos(shopX, shopY);
+
+    // 计算出售区域判定矩形（布局margin:0, spacing:10, 每个格子宽90）
+    // 5个商品 + 1个升级 = 6个格子，第7个格子（出售）起始x = 6 * (90 + 10) = 600
+    // topLayout高度约30px，出售格子相对坐标: x=600, y≈35, 宽90, 高110
+    m_shopSellRect = QRectF(shopX + 600, shopY + 36, 90, 110);
+
+    // 首次填充商品格子内容
+    updateShopUI();
+}
+
+void Game::updateShopUI()
+{
+    if (m_shopProductLayouts.empty()) return;
+
+    for (int i = 0; i < 5; ++i) {
+        QVBoxLayout* layout = m_shopProductLayouts[i];
+        clearLayout(layout);
+
+        UnitInfo* info = m_shop.products().at(i);
+        if (info && info->hp > 0) {
+            QLabel* nameLabel = new QLabel(info->name);
+            nameLabel->setAlignment(Qt::AlignCenter);
+            nameLabel->setStyleSheet("border: none; background: transparent; font-weight: bold; font-size: 12px;");
+
+            QString traitStr;
+            if (info->trait == Unit::Trait::Warrior) traitStr = QString::fromUtf8("战士");
+            else if (info->trait == Unit::Trait::Mage) traitStr = QString::fromUtf8("法师");
+            else if (info->trait == Unit::Trait::Archer) traitStr = QString::fromUtf8("弓手");
+            else traitStr = QString::fromUtf8("无");
+
+            QLabel* statLabel = new QLabel(QString("%1\nHP: %2\nATK: %3").arg(traitStr).arg(info->hp).arg(info->atk));
+            statLabel->setAlignment(Qt::AlignCenter);
+            statLabel->setStyleSheet("border: none; background: transparent; font-size: 10px; margin-top: 2px;");
+
+            QPushButton* buyBtn = new QPushButton(QString::fromUtf8("购买 (3金币)"));
+            buyBtn->setEnabled(!m_inBattle);
+            connect(buyBtn, &QPushButton::clicked, this, [this, i]() {
+                if(m_inBattle) return;
+                m_shop.buyUnit(i, this);
+                emit playerInfoChanged();
+                updateShopUI();
+            });
+
+            layout->addWidget(nameLabel);
+            layout->addWidget(statLabel);
+            layout->addStretch();
+            layout->addWidget(buyBtn);
+        } else {
+            QLabel* emptyLabel = new QLabel(QString::fromUtf8("已售出"));
+            emptyLabel->setAlignment(Qt::AlignCenter);
+            emptyLabel->setStyleSheet("border: none; background: transparent; color: #777;");
+            layout->addWidget(emptyLabel);
+        }
+    }
+
+    if (m_shopRefreshBtn) {
+        m_shopRefreshBtn->setEnabled(!m_inBattle);
+    }
 }
 
 // 对应阶段一「实现备战区与棋盘之间的数据同步」的数据到视图同步。
@@ -1298,9 +1522,9 @@ void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
     const int damage = 10 * remainingUnits;
     
     if (winner == Unit::Owner::PlayerCtrl) {
-        m_player.setGold(m_player.getGold() + 6);
+        m_player.setGold(m_player.Gold() + 6);
     } else {
-        m_player.setGold(m_player.getGold() + 3);
+        m_player.setGold(m_player.Gold() + 3);
     }
 
     if (damage <= 0) {
@@ -1318,7 +1542,7 @@ void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
 
     m_player.reduceHp(damage);
     emit playerInfoChanged();
-    if (m_player.getHp() <= 0) {
+    if (m_player.Hp() <= 0) {
         emit gameOver(); // Need to define this signal or handle it.
     }
 }
@@ -1393,7 +1617,7 @@ void Game::battleTick()
         m_inBattle = false;
         emit battleStateChanged(m_inBattle);
         
-        if (m_enemyDefeatedWaves < m_enemyMaxWaves && m_player.getHp() > 0) {
+        if (m_enemyDefeatedWaves < m_enemyMaxWaves && m_player.Hp() > 0) {
             startNextRound();
         } else if (m_enemyDefeatedWaves >= m_enemyMaxWaves) {
             startNextStage();
@@ -1520,4 +1744,28 @@ int Game::hitTestBenchSlot(const QPointF& scenePos) const
         }
     }
     return -1;
+}
+
+void Game::addUnitFromShop(Unit* unit)
+{
+    if (!unit) return;
+    
+    m_units.append(unit);
+    
+    // 创建图元并连接信号
+    UnitItem* unitItem = new UnitItem(unit);
+    unitItem->setZValue(kZUnit);
+    m_scene->addItem(unitItem);
+    m_unitItems.push_back(unitItem);
+    m_unitItemById[unit->id()] = unitItem;
+
+    connect(unitItem, &UnitItem::dragStarted,
+            this, &Game::handleDragStarted);
+    connect(unitItem, &UnitItem::dragMoved,
+            this, &Game::handleDragMoved);
+    connect(unitItem, &UnitItem::dragDropped,
+            this, &Game::handleDropCommand);
+            
+    // 同步到视图
+    syncFromBoard();
 }

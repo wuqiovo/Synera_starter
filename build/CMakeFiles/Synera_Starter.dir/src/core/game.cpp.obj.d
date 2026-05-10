@@ -349,6 +349,8 @@ CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj: \
  D:/PA/Synera_starter/src/entity/unit.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/QString \
  D:\PA\Synera_starter\src\core\bench.h \
+ D:\PA\Synera_starter\src\core\shop.h \
+ D:/PA/Synera_starter/src/entity\unit.h \
  D:/PA/Synera_starter/src/entity/player.h \
  D:/PA/Synera_starter/src/gui/griditem.h \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/QGraphicsObject \
@@ -449,11 +451,62 @@ CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj: \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qbrush.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qfont.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qpen.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/QTimer \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qtimer.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/QGraphicsProxyWidget \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgraphicsproxywidget.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgraphicswidget.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qaction.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qkeysequence.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qicon.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgraphicslayoutitem.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qsizepolicy.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qevent.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qcoreevent.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qbasictimer.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qabstracteventdispatcher.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qeventloop.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qdeadlinetimer.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qeventpoint.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qvector2d.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qvectornd.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qpointingdevice.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qinputdevice.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qscreen.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/QList \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/QObject \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/QRect \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/QSize \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/QSizeF \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/QTransform \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qnativeinterface.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qscreen_platform.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qguiapplication.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qcoreapplication.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qcoreapplication_platform.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qinputmethod.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qguiapplication_platform.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qpalette.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/QWidget \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qwidget.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qfontmetrics.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qfontinfo.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qfontvariableaxis.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qcursor.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qbitmap.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/QPushButton \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qpushbutton.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qabstractbutton.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/QVBoxLayout \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qboxlayout.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qlayout.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qlayoutitem.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgridlayout.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/QHBoxLayout \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/QLabel \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qlabel.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qframe.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qpicture.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qtextdocument.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/QTimer \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qtimer.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/QPen \
  D:/Qt/6.11.0/mingw_64/include/QtCore/QtMath

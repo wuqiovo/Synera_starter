@@ -176,8 +176,8 @@ void GameWindow::refreshInfoPanels()
     const Player* player = m_game->player();
     m_playerInfoLabel->setText(QString::fromUtf8(
                                    "玩家\nHP: %1\n金币: %2\nStage: %3  Round: %4\n羁绊: 战士 %5  法师 %6  弓手 %7")
-                                   .arg(player ? player->getHp() : 0)
-                                   .arg(player ? player->getGold() : 0)
+                                   .arg(player ? player->Hp() : 0)
+                                   .arg(player ? player->Gold() : 0)
                                    .arg(m_game->stage())
                                    .arg(m_game->round())
                                    .arg(playerWarrior)

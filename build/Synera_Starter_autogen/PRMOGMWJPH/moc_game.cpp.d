@@ -2,6 +2,7 @@ D:/PA/Synera_starter/build/Synera_Starter_autogen/PRMOGMWJPH/moc_game.cpp: D:/PA
   D:/PA/Synera_starter/build/Synera_Starter_autogen/moc_predefs.h \
   D:/PA/Synera_starter/src/core/bench.h \
   D:/PA/Synera_starter/src/core/board.h \
+  D:/PA/Synera_starter/src/core/shop.h \
   D:/PA/Synera_starter/src/entity/player.h \
   D:/PA/Synera_starter/src/entity/unit.h \
   D:/Qt/6.11.0/mingw_64/include/QtCore/QHash \

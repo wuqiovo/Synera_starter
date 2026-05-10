@@ -7,7 +7,7 @@ class Player {
 public:
     explicit Player(const QString& name = QString("User"));
 
-    int getHp() const {return hp;}
+    int Hp() const {return hp;}
     void setHp(int tar) { hp = tar; }
     void healHp(int num) { hp += num; }
     bool reduceHp(int damage) {
@@ -19,7 +19,7 @@ public:
         return true;
     }
 
-    int getGold() const { return gold; }
+    int Gold() const { return gold; }
     void setGold(int num) { gold = num; }
     void addGold(int num) { gold += num; }
     bool costGold(int num) {
@@ -30,13 +30,14 @@ public:
         return true;
     }
 
-    int getLevel() const { return level; }
+    int Level() const { return level; }
     void setLevel(int num) { level = num; }
 
-    int getPopulationCap() const { return populationCap; }
+    int PopulationCap() const { return populationCap; }
+    void addPopulationCap(int num) { populationCap += num; }
     void setPopulationCap(int tar) { populationCap = tar;}
 
-    int getCurStage() const { return curStage; }
+    int CurStage() const { return curStage; }
     void setCurStage(int num) { curStage = num; }
     void nextStage() { curStage += 1; }
 

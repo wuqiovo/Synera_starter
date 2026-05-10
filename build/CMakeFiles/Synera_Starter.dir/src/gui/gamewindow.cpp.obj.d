@@ -400,6 +400,8 @@ CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj: \
  D:/PA/Synera_starter/src/entity/unit.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/QString \
  D:/PA/Synera_starter/src/core/bench.h \
+ D:/PA/Synera_starter/src/core/shop.h \
+ D:/PA/Synera_starter/src/entity\unit.h \
  D:/PA/Synera_starter/src/entity/player.h \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/QApplication \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/qapplication.h \
