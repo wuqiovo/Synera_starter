@@ -23,6 +23,9 @@ class QGraphicsSimpleTextItem;
 class GridItem;
 class UnitItem;
 class QTimer;
+class QGraphicsProxyWidget;
+class QPushButton;
+class QVBoxLayout;
 
 class Game : public QObject
 {
@@ -161,11 +164,11 @@ private:
     QGraphicsSimpleTextItem* m_benchLabel;
     
     // 商店UI的代理
-    class QGraphicsProxyWidget* m_shopProxy = nullptr;
+    QGraphicsProxyWidget* m_shopProxy = nullptr;
     // 商店内5个商品格子的布局指针，用于updateShopUI快速刷新
-    std::vector<class QVBoxLayout*> m_shopProductLayouts;
+    std::vector<QVBoxLayout*> m_shopProductLayouts;
     // 商店刷新按钮指针，用于更新启用状态
-    class QPushButton* m_shopRefreshBtn = nullptr;
+    QPushButton* m_shopRefreshBtn = nullptr;
     // 商店出售区域判定矩形(场景坐标)
     QRectF m_shopSellRect;
 
