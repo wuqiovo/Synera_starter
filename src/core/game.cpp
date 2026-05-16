@@ -86,7 +86,7 @@ void Game::reset()
     m_enemyMaxWaves = 5;
     m_inBattle = false;
     m_player.setHp(100);
-    m_player.setGold(5);
+    m_player.setGold(0);
     m_player.setLevel(1);
     m_player.setPopulationCap(6);
     m_player.setCurStage(m_stage);
@@ -553,7 +553,23 @@ void Game::handleDragMoved(int unitId, const QPoint&, const QPointF& scenePos)
                 m_benchItems[benchSlot]->setBrush(m_benchSlotHighlightColor);
             }
         }
+        
+        if (!m_inBattle && m_shopSellRect.contains(scenePos)) {
+            if (m_shopSellWidget) {
+                m_shopSellWidget->setStyleSheet("#sellBlock { background: rgba(180, 80, 60, 200); border: 2px solid #ff7a5a; border-radius: 5px; }");
+            }
+        } else {
+            if (m_shopSellWidget) {
+                m_shopSellWidget->setStyleSheet("#sellBlock { background: rgba(80, 80, 60, 200); border: 2px solid #7a7a5a; border-radius: 5px; }");
+            }
+        }
+        
         return;
+    } else {
+        // 重置拖拽出商店区域时的高亮状态
+        if (m_shopSellWidget) {
+            m_shopSellWidget->setStyleSheet("#sellBlock { background: rgba(80, 80, 60, 200); border: 2px solid #7a7a5a; border-radius: 5px; }");
+        }
     }
 
     const QPoint target = worldToGrid(scenePos);
@@ -584,6 +600,11 @@ void Game::handleDropCommand(int unitId, const QPoint& sourceGrid, const QPointF
 
     clearGridHighlights();
     clearBenchHighlights();
+    
+    // 鼠标释放时恢复商店出售区高亮外观
+    if (m_shopSellWidget) {
+        m_shopSellWidget->setStyleSheet("#sellBlock { background: rgba(80, 80, 60, 200); border: 2px solid #7a7a5a; border-radius: 5px; }");
+    }
 
     Unit* unit = findUnitById(m_activeUnitId);
     
@@ -1211,10 +1232,11 @@ void Game::buildShopUI()
     m_shopRefreshBtn = nullptr;
 
     QWidget* shopWidget = new QWidget();
-    shopWidget->setStyleSheet("QWidget { background: transparent; color: #f2f2f2; } "
-                              "QPushButton { background: #3a3a3a; border: 1px solid #555; padding: 4px; border-radius: 3px; font-size: 10px; } "
-                              "QPushButton:hover { background: #4a4a4a; } "
-                              "QLabel { font-size: 11px; }");
+    shopWidget->setStyleSheet("#shopWidget { background: transparent; color: #f2f2f2; } "
+                              "QPushButton { background: #3a3a3a; border: 1px solid #555; padding: 4px; border-radius: 3px; font-size: 10px; color: #f2f2f2; } "
+                              "QPushButton:hover { background: #6a8a6a; border: 1px solid #8a8a8a; } "
+                              "QLabel { font-size: 11px; color: #f2f2f2; }");
+    shopWidget->setObjectName("shopWidget");
     QVBoxLayout* shopLayout = new QVBoxLayout(shopWidget);
     shopLayout->setContentsMargins(0, 0, 0, 0);
     shopLayout->setSpacing(6);
@@ -1226,7 +1248,8 @@ void Game::buildShopUI()
     shopTitle->setStyleSheet("font-weight: bold; font-size: 16px; background: rgba(50,50,50,200); border-radius: 4px; padding: 2px;");
 
     QPushButton* refreshBtn = new QPushButton(QString::fromUtf8("刷新商店 (2金币)"));
-    refreshBtn->setStyleSheet("background: #4a3a3a; font-size: 11px; padding: 6px;");
+    refreshBtn->setStyleSheet("QPushButton { background: #4a3a3a; font-size: 11px; padding: 6px; border: 1px solid #555; border-radius: 3px; }"
+                              "QPushButton:hover { background: #6a8a6a; border: 1px solid #8a8a8a; }");
     refreshBtn->setEnabled(!m_inBattle);
     m_shopRefreshBtn = refreshBtn;
     connect(refreshBtn, &QPushButton::clicked, this, [this]() {
@@ -1247,8 +1270,9 @@ void Game::buildShopUI()
     // 五个单位格子，仅创建基础容器，内容由updateShopUI动态填充
     for (int i = 0; i < 5; ++i) {
         QWidget* block = new QWidget();
+        block->setObjectName("productBlock");
         block->setFixedSize(90, 110);
-        block->setStyleSheet("background: rgba(60, 60, 80, 200); border: 2px solid #5a5a7a; border-radius: 5px;");
+        block->setStyleSheet("#productBlock { background: rgba(60, 60, 80, 200); border: 2px solid #5a5a7a; border-radius: 5px; }");
         QVBoxLayout* blockLayout = new QVBoxLayout(block);
         blockLayout->setContentsMargins(4, 4, 4, 4);
         m_shopProductLayouts.push_back(blockLayout);
@@ -1258,8 +1282,9 @@ void Game::buildShopUI()
     // 升级人口格子
     {
         QWidget* block = new QWidget();
+        block->setObjectName("upgradeBlock");
         block->setFixedSize(90, 110);
-        block->setStyleSheet("background: rgba(80, 60, 60, 200); border: 2px solid #7a5a5a; border-radius: 5px;");
+        block->setStyleSheet("#upgradeBlock { background: rgba(80, 60, 60, 200); border: 2px solid #7a5a5a; border-radius: 5px; }");
         QVBoxLayout* blockLayout = new QVBoxLayout(block);
         blockLayout->setContentsMargins(4, 4, 4, 4);
 
@@ -1290,8 +1315,9 @@ void Game::buildShopUI()
     // 出售单位格子
     {
         QWidget* block = new QWidget();
+        block->setObjectName("sellBlock");
         block->setFixedSize(90, 110);
-        block->setStyleSheet("background: rgba(80, 80, 60, 200); border: 2px solid #7a7a5a; border-radius: 5px;");
+        block->setStyleSheet("#sellBlock { background: rgba(80, 80, 60, 200); border: 2px solid #7a7a5a; border-radius: 5px; }");
         QVBoxLayout* blockLayout = new QVBoxLayout(block);
         blockLayout->setContentsMargins(4, 4, 4, 4);
 
@@ -1308,6 +1334,7 @@ void Game::buildShopUI()
         blockLayout->addWidget(descLabel);
         blockLayout->addStretch();
 
+        m_shopSellWidget = block; // 记录出售区域的 widget 指针以便高亮
         blocksLayout->addWidget(block);
     }
 

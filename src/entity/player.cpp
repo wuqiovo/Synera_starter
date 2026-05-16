@@ -4,7 +4,7 @@
 Player::Player(const QString& name)
     : player_name(name)
     , hp(100)
-    , gold(5)
+    , gold(0)
     , level(1)
     , populationCap(6)
     , curStage(1)

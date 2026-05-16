@@ -107,6 +107,15 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
             painter->setPen(QColor(120, 210, 240));
             painter->drawText(QRectF(-32, -46, 64, 12), Qt::AlignCenter, manaText);
         }
+
+        // 新增：在单位蓝条下方显示 Lv. x 文本
+        const QString levelText = QString("Lv. %1").arg(m_unit->level());
+        QFont levelFont = painter->font();
+        levelFont.setPointSize(8);
+        levelFont.setBold(true);
+        painter->setFont(levelFont);
+        painter->setPen(QColor(255, 215, 0)); // 金色字体
+        painter->drawText(QRectF(-32, -34, 64, 12), Qt::AlignCenter, levelText);
     }
 }
 

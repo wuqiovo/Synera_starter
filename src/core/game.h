@@ -119,10 +119,13 @@ private:
     void stopBattleLoop();
     bool hasAliveUnits(Unit::Owner owner) const;
     void flushUnitRemovals();
-    void removeUnitNow(Unit* unit);
     Unit* nextActingUnit();
     void setActiveUnitItem(int unitId);
 
+public:
+    void removeUnitNow(Unit* unit);
+
+private:
     QPointF gridToWorld(int row, int col) const;
     QPoint worldToGrid(const QPointF& world) const;
     QPolygonF cellHexPolygon(int row, int col) const;
@@ -171,6 +174,7 @@ private:
     QPushButton* m_shopRefreshBtn = nullptr;
     // 商店出售区域判定矩形(场景坐标)
     QRectF m_shopSellRect;
+    QWidget* m_shopSellWidget = nullptr;
 
     // 当前是否处于拖拽流程中。
     bool m_dragActive;

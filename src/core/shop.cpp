@@ -82,6 +82,50 @@ void Shop::buyUnit(int index, Game* game)
     if (!placed) {
         game->player()->addGold(3); // 退还金钱
         delete newUnit; // 购买失败，删除创建的单位
+    } else {
+        // 判定是否存在相同职业的三个1星单位
+        QList<Unit*> matchingUnits;
+        for (Unit* u : game->units()) {
+            if (u->owner() == Unit::Owner::PlayerCtrl && 
+                u->trait() == newUnit->trait() && 
+                u->level() == 1) {
+                matchingUnits.append(u);
+            }
+        }
+        
+        if (matchingUnits.size() >= 3) {
+            Unit::Trait t = matchingUnits[0]->trait();
+            QString tname = matchingUnits[0]->name();
+            // 记录基础属性由于后续会被删除
+            int baseHp = matchingUnits[0]->maxHp();
+            int baseAtk = matchingUnits[0]->atk();
+            
+            for (int i = 0; i < 3; ++i) {
+                game->removeUnitNow(matchingUnits[i]);
+            }
+            
+            Unit* star2 = nullptr;
+            if (t == Unit::Trait::Warrior) {
+                star2 = new Warrior(tname, baseHp, baseAtk);
+            } else if (t == Unit::Trait::Mage) {
+                star2 = new Mage(tname, baseHp, baseAtk);
+            } else if (t == Unit::Trait::Archer) {
+                star2 = new Archer(tname, baseHp, baseAtk);
+            } else {
+                star2 = new Unit(tname, t, baseHp, baseAtk);
+            }
+            star2->setOwner(Unit::Owner::PlayerCtrl);
+            star2->upgrade(); // 变成2星并增加属性
+            
+            for (int i = game->bench()->capacity() - 1; i >= 0; --i) {
+                if (!game->bench()->hasUnitAt(i)) {
+                    if (game->bench()->addUnit(star2, i)) {
+                        game->addUnitFromShop(star2);
+                        break;
+                    }
+                }
+            }
+        }
     }
 }
 

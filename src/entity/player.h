@@ -47,7 +47,7 @@ public:
 
 private:
     int hp; // 玩家生命值(默认100)
-    int gold; // 玩家金币(默认5)
+    int gold; // 玩家金币(默认0)
     int level; // 玩家等级(默认1)
     int populationCap; // 人口上限(默认6)
     int curStage; // 当前关卡(初始1)
