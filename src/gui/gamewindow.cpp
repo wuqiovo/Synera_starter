@@ -163,8 +163,11 @@ void GameWindow::refreshInfoPanels()
         return;
     }
 
-    m_phaseLabel->setText(m_game->isInBattle() ? QString::fromUtf8("战斗阶段")
-                                               : QString::fromUtf8("部署阶段"));
+    QString phaseStr = m_game->isInBattle() ? QString::fromUtf8("战斗阶段") : QString::fromUtf8("部署阶段");
+    m_phaseLabel->setText(QString::fromUtf8("%1\nStage: %2  Round: %3")
+                          .arg(phaseStr)
+                          .arg(m_game->stage())
+                          .arg(m_game->round()));
 
     const int playerWarrior = m_game->traitCount(Unit::Owner::PlayerCtrl, Unit::Trait::Warrior);
     const int playerMage = m_game->traitCount(Unit::Owner::PlayerCtrl, Unit::Trait::Mage);
@@ -174,12 +177,23 @@ void GameWindow::refreshInfoPanels()
     const int enemyArcher = m_game->traitCount(Unit::Owner::EnemyCtrl, Unit::Trait::Archer);
 
     const Player* player = m_game->player();
+    int currentPop = 0;
+    if (m_game) {
+        // Here we just use countAliveUnits or write a loop in Game to get current player population on board
+        const auto& units = m_game->units();
+        for (auto* unit : units) {
+            if (unit && unit->owner() == Unit::Owner::PlayerCtrl && m_game->isUnitOnBoard(unit)) {
+                currentPop += 1;
+            }
+        }
+    }
+    
     m_playerInfoLabel->setText(QString::fromUtf8(
-                                   "玩家\nHP: %1\n金币: %2\nStage: %3  Round: %4\n羁绊: 战士 %5  法师 %6  弓手 %7")
+                                   "玩家\nHP: %1\n金币: %2\n人口: %3/%4\n羁绊: 战士 %5  法师 %6  弓手 %7")
                                    .arg(player ? player->Hp() : 0)
                                    .arg(player ? player->Gold() : 0)
-                                   .arg(m_game->stage())
-                                   .arg(m_game->round())
+                                   .arg(currentPop)
+                                   .arg(player ? player->PopulationCap() : 0)
                                    .arg(playerWarrior)
                                    .arg(playerMage)
                                    .arg(playerArcher));
@@ -199,10 +213,7 @@ void GameWindow::onBattleStateChanged(bool inBattle)
     m_endDeploymentButton->setEnabled(!inBattle);
     m_endBattleDebugButton->setEnabled(inBattle);
     m_saveExitButton->setEnabled(!inBattle); // 战斗中禁用保存并退出按钮
-    if (m_phaseLabel) {
-        m_phaseLabel->setText(inBattle ? QString::fromUtf8("战斗阶段")
-                                        : QString::fromUtf8("部署阶段"));
-    }
+    refreshInfoPanels();
 }
 
 void GameWindow::setupUI()
@@ -228,11 +239,16 @@ void GameWindow::setupUI()
             padding: 6px 14px;
             font-size: 13px;
         }
-        QPushButton:hover {
+        QPushButton:hover:!disabled {
             background-color: #3a3a3a;
         }
-        QPushButton:pressed {
+        QPushButton:pressed:!disabled {
             background-color: #242424;
+        }
+        QPushButton:disabled {
+            background-color: #2f2f2f;
+            color: #888888;
+            border: 1px solid #444444;
         }
     )");
 

@@ -20,6 +20,7 @@ public:
         Warrior, // 战士
         Mage,    // 法师
         Archer,  // 弓箭手
+        Boss,    // Boss
         // 后续可扩展更多羁绊类型
     };
 
@@ -57,6 +58,9 @@ public:
     void setBonusMaxHp(int bonus) { m_bonusMaxHp = bonus; }
     void setBonusAtk(int bonus) { m_bonusAtk = bonus; }
     void setBonusRange(int bonus) { m_bonusRange = bonus; }
+    int bonusMaxHp() const { return m_bonusMaxHp; }
+    int bonusAtk() const { return m_bonusAtk; }
+    int bonusRange() const { return m_bonusRange; }
 
     int maxMana() const { return m_maxMana; }
     void setMaxMana(int maxMana) { m_maxMana = maxMana; }

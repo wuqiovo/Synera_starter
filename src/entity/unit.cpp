@@ -551,7 +551,7 @@ void Archer::skill(Game* game)
 }
 
 Boss::Boss(const QString& name, int hp, int atk)
-    : Unit(name, Trait::None, hp, atk)
+    : Unit(name, Trait::Boss, hp, atk)
 {
     setRange(1);     // Boss近战攻击
 

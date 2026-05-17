@@ -14,9 +14,9 @@
 #include "bench.h"
 #include "shop.h"
 #include "entity/player.h"
+#include "gamestate.h"
 
 class Unit;
-struct GameState;
 class QGraphicsScene;
 class QGraphicsRectItem;
 class QGraphicsSimpleTextItem;
@@ -87,8 +87,7 @@ private:
     void createStarterUnitsIfNeeded();
     void spawnEnemiesForCurrentRound();
     void clearEnemyUnits();
-    void movePlayerUnitsBack();
-    void createPlayerUnitForCurrentRound();
+    void restorePlayerUnits();
 
     Unit* findUnitById(int unitId) const;
     GridItem* findGridItem(const QPoint& gridPos) const;
@@ -172,6 +171,7 @@ private:
     std::vector<QVBoxLayout*> m_shopProductLayouts;
     // 商店刷新按钮指针，用于更新启用状态
     QPushButton* m_shopRefreshBtn = nullptr;
+    QPushButton* m_shopUpgradeBtn = nullptr;
     // 商店出售区域判定矩形(场景坐标)
     QRectF m_shopSellRect;
     QWidget* m_shopSellWidget = nullptr;
@@ -203,6 +203,9 @@ private:
     int m_enemyDefeatedWaves;
     // 敌方最大波次。
     int m_enemyMaxWaves;
+
+    // 战斗前玩家棋盘上的单位存档
+    QVector<UnitState> m_preBattlePlayerUnits;
 
     // 敌方单位数量上限。
     int m_enemyUnitCap;

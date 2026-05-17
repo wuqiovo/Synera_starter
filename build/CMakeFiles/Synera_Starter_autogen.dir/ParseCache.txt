@@ -6,6 +6,7 @@ D:/PA/Synera_starter/src/core/game.h
  mdp:D:/PA/Synera_starter/src/core/bench.h
  mdp:D:/PA/Synera_starter/src/core/board.h
  mdp:D:/PA/Synera_starter/src/core/game.h
+ mdp:D:/PA/Synera_starter/src/core/gamestate.h
  mdp:D:/PA/Synera_starter/src/core/shop.h
  mdp:D:/PA/Synera_starter/src/entity/player.h
  mdp:D:/PA/Synera_starter/src/entity/unit.h

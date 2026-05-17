@@ -85,6 +85,7 @@ void Game::reset()
     m_enemyDefeatedWaves = 0;
     m_enemyMaxWaves = 5;
     m_inBattle = false;
+    updateShopUI();
     m_player.setHp(100);
     m_player.setGold(100);
     m_player.setLevel(1);
@@ -143,9 +144,8 @@ void Game::startNextRound()
 {
     ++m_round;
     clearEnemyUnits();
-    movePlayerUnitsBack();
+    restorePlayerUnits();
     spawnEnemiesForCurrentRound();
-    createPlayerUnitForCurrentRound();
     syncFromBoard();
     refreshTraitCounts();
     emit stageRoundChanged();
@@ -158,7 +158,31 @@ void Game::endDeployment()
     if (m_inBattle) {
         return;
     }
+
+    // 记录战斗前玩家棋盘上的单位状态
+    m_preBattlePlayerUnits.clear();
+    for (Unit* unit : m_units) {
+        if (unit && unit->owner() == Unit::Owner::PlayerCtrl && isUnitOnBoard(unit)) {
+            UnitState u;
+            u.id = unit->id();
+            u.name = unit->name();
+            u.position = unit->position();
+            u.hp = unit->hp();
+            u.maxHp = unit->maxHp() - unit->bonusMaxHp();
+            u.atk = unit->atk() - unit->bonusAtk();
+            u.range = unit->range() - unit->bonusRange();
+            u.maxMana = unit->maxMana();
+            u.mana = unit->mana();
+            u.owner = unit->owner();
+            u.status = unit->status();
+            u.trait = unit->trait();
+            u.level = unit->level();
+            m_preBattlePlayerUnits.push_back(u);
+        }
+    }
+
     m_inBattle = true;
+    updateShopUI();
     emit battleStateChanged(m_inBattle);
     startBattleLoop();
 }
@@ -175,13 +199,16 @@ void Game::debugEndBattle()
 
     resolveRoundFromCurrentBoard();
 
+    if (!m_inBattle) {
+        return;
+    }
+
     m_inBattle = false;
+    updateShopUI();
     emit battleStateChanged(m_inBattle);
 
     if (m_enemyDefeatedWaves < m_enemyMaxWaves && m_player.Hp() > 0) {
         startNextRound();
-    } else if (m_enemyDefeatedWaves >= m_enemyMaxWaves) {
-        startNextStage();
     }
 }
 
@@ -199,6 +226,7 @@ void Game::clearAllUnits()
     m_unitsPendingRemoval.clear();
     m_enemyUnitCount = 0;
     m_battleTurnIndex = 0;
+    m_preBattlePlayerUnits.clear(); // 清理残留的存档信息
     setActiveUnitItem(-1);
 }
 
@@ -228,14 +256,15 @@ GameState Game::captureState() const
         u.name = unit->name();
         u.position = unit->position();
         u.hp = unit->hp();
-        u.maxHp = unit->maxHp();
-        u.atk = unit->atk();
-        u.range = unit->range();
+        u.maxHp = unit->maxHp() - unit->bonusMaxHp();
+        u.atk = unit->atk() - unit->bonusAtk();
+        u.range = unit->range() - unit->bonusRange();
         u.maxMana = unit->maxMana();
         u.mana = unit->mana();
         u.owner = unit->owner();
         u.status = unit->status();
         u.trait = unit->trait();
+        u.level = unit->level();
         state.units.push_back(u);
     }
 
@@ -270,6 +299,7 @@ void Game::loadFromState(const GameState& state)
     m_enemyDefeatedWaves = state.enemyDefeatedWaves;
     m_enemyMaxWaves = state.enemyMaxWaves;
     m_inBattle = state.inBattle;
+    updateShopUI();
 
     m_player.setHp(state.player.hp);
     m_player.setGold(state.player.gold);
@@ -291,6 +321,9 @@ void Game::loadFromState(const GameState& state)
         case Unit::Trait::Archer:
             unit = new Archer(u.name);
             break;
+        case Unit::Trait::Boss:
+            unit = new Boss(u.name);
+            break;
         default:
             unit = new Unit(u.name, Unit::Trait::None);
             break;
@@ -304,6 +337,7 @@ void Game::loadFromState(const GameState& state)
         unit->setOwner(u.owner);
         unit->setStatus(u.status);
         unit->setTrait(u.trait);
+        unit->setLevel(u.level);
         unit->setPosition(u.position);
         m_units.append(unit);
         if (u.owner == Unit::Owner::EnemyCtrl) {
@@ -387,35 +421,37 @@ void Game::refreshTraitCounts()
         }
     }
 
-    // 应用羁绊加成
+    // 应用羁绊加成：仅当目标值与当前值不同时才更新，避免重复叠加。
+    // 备战区单位不参与计算，既不增加也不减少其加成。
     for (Unit* unit : m_units) {
         if (!unit) continue;
-
-        unit->setBonusMaxHp(0);
-        unit->setBonusAtk(0);
-        unit->setBonusRange(0);
-        // 法师羁绊加成已在skill中写出
 
         if (!isUnitOnBoard(unit)) continue;
 
         auto ownerCounts = (unit->owner() == Unit::Owner::EnemyCtrl) ? m_enemyTraitCounts : m_playerTraitCounts;
 
         if (unit->trait() == Unit::Trait::Warrior) {
-            int warriorCount = ownerCounts[traitIndex(Unit::Trait::Warrior)];
-            if (warriorCount >= 2) {
-                unit->setBonusMaxHp(10);
-            }
-            if (warriorCount >= 4) {
-                unit->setBonusAtk(3);
-            }
+            const int warriorCount = ownerCounts[traitIndex(Unit::Trait::Warrior)];
+            const int targetHpBonus  = (warriorCount >= 2) ? 10 : 0;
+            const int targetAtkBonus = (warriorCount >= 4) ? 3  : 0;
+            if (unit->bonusMaxHp() != targetHpBonus) unit->setBonusMaxHp(targetHpBonus);
+            if (unit->bonusAtk()   != targetAtkBonus) unit->setBonusAtk(targetAtkBonus);
+            if (unit->bonusRange() != 0) unit->setBonusRange(0);
         }
         else if (unit->trait() == Unit::Trait::Archer) {
-            int archerCount = ownerCounts[traitIndex(Unit::Trait::Archer)];
-            if (archerCount >= 3) {
-                unit->setBonusRange(1); // 2 -> 3
-            }
+            const int archerCount = ownerCounts[traitIndex(Unit::Trait::Archer)];
+            const int targetRangeBonus = (archerCount >= 3) ? 1 : 0;
+            if (unit->bonusRange() != targetRangeBonus) unit->setBonusRange(targetRangeBonus);
+            if (unit->bonusMaxHp() != 0) unit->setBonusMaxHp(0);
+            if (unit->bonusAtk()   != 0) unit->setBonusAtk(0);
         }
-        
+        else {
+            // 法师等其他职业：羁绊加成在其 skill 中处理，此处清除可能残留的基础属性加成。
+            if (unit->bonusMaxHp() != 0) unit->setBonusMaxHp(0);
+            if (unit->bonusAtk()   != 0) unit->setBonusAtk(0);
+            if (unit->bonusRange() != 0) unit->setBonusRange(0);
+        }
+
         // 保证血量不溢出
         if (!m_inBattle) {
             unit->setHp(unit->maxHp());
@@ -764,43 +800,20 @@ void Game::clearEnemyUnits()
     emit enemyInfoChanged();
 }
 
-void Game::movePlayerUnitsBack()
+void Game::restorePlayerUnits()
 {
-    if (m_round == 1) {
+    // 如果没有记录任何状态，不需要恢复，可能是游戏刚初始化完
+    if (m_preBattlePlayerUnits.isEmpty()) {
         return;
     }
 
+    // 只移除留在棋盘上的所有玩家单位
     for (Unit* unit : m_units) {
-        bool finished = false;
-        if (unit && unit->owner() == Unit::Owner::PlayerCtrl) {
-            for (int row = Board::ROWS - 1; row >= Board::ROWS / 2; --row) {
-                for (int col = 0; col < Board::COLS; ++col) {
-                    if (m_board.moveUnit(unit, QPoint(col, row))) {
-                        unit->setHp(unit->maxHp()); // 回满血
-                        unit->setMana(unit->maxMana()); // 回满蓝
-                        finished = true;
-                        break;
-                    }
-                }
-                
-                if (finished) {
-                    break;
-                }
-            }
+        if (unit && unit->owner() == Unit::Owner::PlayerCtrl && isUnitOnBoard(unit)) {
+            requestRemoveUnit(unit);
         }
     }
-}
-
-void Game::createPlayerUnitForCurrentRound()
-{
-    if (m_round == 1) {
-        return;
-    }
-
-    const int playerUnitCount = countAliveUnits(Unit::Owner::PlayerCtrl)
-                                + m_bench.unitCount();
-    const int enemyUnitCount = countAliveUnits(Unit::Owner::EnemyCtrl);
-    const int spawnCount = enemyUnitCount - playerUnitCount;
+    flushUnitRemovals();
 
     auto attachUnitItemFor = [this](Unit* unit) {
         UnitItem* unitItem = new UnitItem(unit);
@@ -817,32 +830,48 @@ void Game::createPlayerUnitForCurrentRound()
                 this, &Game::handleDropCommand);
     };
 
-    for (int i = 0; i < spawnCount; ++i) {
-        Unit* newUnit = nullptr;
-        if (i % 3 == 0) {
-            newUnit = new Warrior(QString::fromUtf8("增援战士"), 150, 10);
-        } else if (i % 3 == 1) {
-            newUnit = new Archer(QString::fromUtf8("增援弓手"), 100, 10);
-        } else {
-            newUnit = new Mage(QString::fromUtf8("增援法师"), 80, 15);
+    // 重建所有原来在棋盘上的玩家单位
+    for (const UnitState& u : m_preBattlePlayerUnits) {
+        Unit* unit = nullptr;
+        switch (u.trait) {
+        case Unit::Trait::Warrior:
+            unit = new Warrior(u.name);
+            break;
+        case Unit::Trait::Mage:
+            unit = new Mage(u.name);
+            break;
+        case Unit::Trait::Archer:
+            unit = new Archer(u.name);
+            break;
+        case Unit::Trait::Boss:
+            unit = new Boss(u.name);
+            break;
+        default:
+            unit = new Unit(u.name, Unit::Trait::None);
+            break;
         }
-        newUnit->setOwner(Unit::Owner::PlayerCtrl);
-        bool isPlaced = false;
 
-        for (int row = Board::ROWS - 1; row >= Board::ROWS / 2; --row) {
-            for (int col = 0; col < Board::COLS; ++col) {
-                if (m_board.addUnit(newUnit, QPoint(col, row))) {
-                    attachUnitItemFor(newUnit);
-                    isPlaced = true;
-                    break;
-                }
-            }
+        // 恢复属性和等级
+        unit->setHp(u.maxHp);      // 恢复为满血
+        unit->setMaxHp(u.maxHp);
+        unit->setAtk(u.atk);
+        unit->setRange(u.range);
+        unit->setMaxMana(u.maxMana);
+        unit->setMana(u.maxMana);  // 恢复为满蓝
+        unit->setOwner(Unit::Owner::PlayerCtrl);
+        unit->setStatus(Unit::Status::Idle);
+        unit->setTrait(u.trait);
+        unit->setLevel(u.level);
+
+        m_units.append(unit);
+        
+        // 把它放回棋盘
+        if (m_board.isValidPosition(u.position)) {
+            m_board.addUnit(unit, u.position);
         }
 
-        if (!isPlaced) {
-            delete newUnit;
-        }
-    }    
+        attachUnitItemFor(unit);
+    }
 
     emit playerInfoChanged();
 }
@@ -1018,12 +1047,14 @@ bool Game::canDropOnBoard(Unit* unit, const QPoint& target) const
     if (!m_board.isValidPosition(target) || !m_board.isPlayerHalf(target)) {
         return false;
     }
-    if (countAliveUnits(Unit::Owner::PlayerCtrl) >= m_player.PopulationCap() 
-        && !m_board.getUnitAt(target)) 
+
+    const bool alreadyOnBoard = isUnitOnBoard(unit);
+    if (!alreadyOnBoard && countAliveUnits(Unit::Owner::PlayerCtrl) >= m_player.PopulationCap()
+        && !m_board.getUnitAt(target))
     {
-        return false; // 人口已满且目标格无单位时，不允许放置新单位
+        return false; // 人口已满且单位不在棋盘上时，不允许放置新单位到空格
     }
-    
+
     Unit* targetUnit = m_board.getUnitAt(target);
     if (targetUnit && targetUnit->owner() != Unit::Owner::PlayerCtrl) {
         return false;
@@ -1288,7 +1319,8 @@ void Game::buildShopUI()
     QWidget* shopWidget = new QWidget();
     shopWidget->setStyleSheet("#shopWidget { background: transparent; color: #f2f2f2; } "
                               "QPushButton { background: #3a3a3a; border: 1px solid #555; padding: 4px; border-radius: 3px; font-size: 10px; color: #f2f2f2; } "
-                              "QPushButton:hover { background: #6a8a6a; border: 1px solid #8a8a8a; } "
+                              "QPushButton:hover:!disabled { background: #6a8a6a; border: 1px solid #8a8a8a; } "
+                              "QPushButton:disabled { background: #2f2f2f; color: #888; border: 1px solid #444; } "
                               "QLabel { font-size: 11px; color: #f2f2f2; }");
     shopWidget->setObjectName("shopWidget");
     QVBoxLayout* shopLayout = new QVBoxLayout(shopWidget);
@@ -1303,7 +1335,8 @@ void Game::buildShopUI()
 
     QPushButton* refreshBtn = new QPushButton(QString::fromUtf8("刷新商店 (2金币)"));
     refreshBtn->setStyleSheet("QPushButton { background: #4a3a3a; font-size: 11px; padding: 6px; border: 1px solid #555; border-radius: 3px; }"
-                              "QPushButton:hover { background: #6a8a6a; border: 1px solid #8a8a8a; }");
+                              "QPushButton:hover:!disabled { background: #6a8a6a; border: 1px solid #8a8a8a; }"
+                              "QPushButton:disabled { background: #2f2f2f; color: #888; border: 1px solid #444; }");
     refreshBtn->setEnabled(!m_inBattle);
     m_shopRefreshBtn = refreshBtn;
     connect(refreshBtn, &QPushButton::clicked, this, [this]() {
@@ -1352,6 +1385,7 @@ void Game::buildShopUI()
 
         QPushButton* buyBtn = new QPushButton(QString::fromUtf8("购买 (5金币)"));
         buyBtn->setEnabled(!m_inBattle);
+        m_shopUpgradeBtn = buyBtn;
         connect(buyBtn, &QPushButton::clicked, this, [this]() {
             if(m_inBattle) return;
             m_shop.upgradeCapacity(this);
@@ -1459,6 +1493,9 @@ void Game::updateShopUI()
 
     if (m_shopRefreshBtn) {
         m_shopRefreshBtn->setEnabled(!m_inBattle);
+    }
+    if (m_shopUpgradeBtn) {
+        m_shopUpgradeBtn->setEnabled(!m_inBattle);
     }
 }
 
@@ -1672,6 +1709,17 @@ void Game::battleTick()
         return;
     }
 
+    // 检查并集中移除血量归零的单位
+    for (Unit* unit : m_units) {
+        if (unit && unit->hp() <= 0 && unit->status() != Unit::Status::Dead) {
+            unit->setStatus(Unit::Status::Dead);
+        }
+        if (unit && unit->status() == Unit::Status::Dead) {
+            requestRemoveUnit(unit);
+        }
+    }
+    flushUnitRemovals();
+
     Unit* unit = nextActingUnit();
     if (unit) {
         setActiveUnitItem(unit->id());
@@ -1695,13 +1743,20 @@ void Game::battleTick()
         stopBattleLoop();
         setActiveUnitItem(-1);
         resolveRoundFromCurrentBoard();
+
+        // 若 resolveRoundFromCurrentBoard 中 emit enemyDefeated →
+        // onEnemyDefeated → startNextStage → reset() 已将 m_inBattle 置 false，
+        // 说明阶段切换已完成，直接返回避免下方重复调用 startNextRound。
+        if (!m_inBattle) {
+            return;
+        }
+
         m_inBattle = false;
+        updateShopUI(); // 更新按钮状态
         emit battleStateChanged(m_inBattle);
-        
+
         if (m_enemyDefeatedWaves < m_enemyMaxWaves && m_player.Hp() > 0) {
             startNextRound();
-        } else if (m_enemyDefeatedWaves >= m_enemyMaxWaves) {
-            startNextStage();
         }
     }
 }
@@ -1727,11 +1782,11 @@ Unit* Game::nextActingUnit()
         if (!isUnitOnBoard(unit)) {
             continue;
         }
-        /* 已经死亡的单位需要调用act方法彻底清除
+        
         if (unit->status() == Unit::Status::Dead || unit->hp() <= 0) {
             continue;
         }
-        */
+        
         return unit;
     }
 

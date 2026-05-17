@@ -352,6 +352,7 @@ CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj: \
  D:\PA\Synera_starter\src\core\shop.h \
  D:/PA/Synera_starter/src/entity\unit.h \
  D:/PA/Synera_starter/src/entity/player.h \
+ D:\PA\Synera_starter\src\core\gamestate.h \
  D:/PA/Synera_starter/src/gui/griditem.h \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/QGraphicsObject \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgraphicsitem.h \

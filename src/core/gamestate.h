@@ -33,6 +33,8 @@ struct UnitState
     Unit::Status status = Unit::Status::Idle;
     // 羁绊类型。
     Unit::Trait trait = Unit::Trait::None;
+    // 星级/等级
+    int level = 1;
 };
 
 // 玩家存档

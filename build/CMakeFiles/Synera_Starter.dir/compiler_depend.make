@@ -5,6 +5,7 @@ CMakeFiles/Synera_Starter.dir/Synera_Starter_autogen/mocs_compilation.cpp.obj: S
   D:/PA/Synera_starter/src/core/bench.h \
   D:/PA/Synera_starter/src/core/board.h \
   D:/PA/Synera_starter/src/core/game.h \
+  D:/PA/Synera_starter/src/core/gamestate.h \
   D:/PA/Synera_starter/src/core/shop.h \
   D:/PA/Synera_starter/src/entity/player.h \
   D:/PA/Synera_starter/src/entity/unit.h \
@@ -1539,6 +1540,7 @@ CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj: D:/PA/Synera_starter/src/co
   D:/PA/Synera_starter/src/core/bench.h \
   D:/PA/Synera_starter/src/core/board.h \
   D:/PA/Synera_starter/src/core/game.h \
+  D:/PA/Synera_starter/src/core/gamestate.h \
   D:/PA/Synera_starter/src/core/shop.h
 
 CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj: D:/PA/Synera_starter/src/core/shop.cpp \
@@ -1904,6 +1906,7 @@ CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj: D:/PA/Synera_starter/src/co
   D:/PA/Synera_starter/src/core/bench.h \
   D:/PA/Synera_starter/src/core/board.h \
   D:/PA/Synera_starter/src/core/game.h \
+  D:/PA/Synera_starter/src/core/gamestate.h \
   D:/PA/Synera_starter/src/core/shop.h
 
 CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj: D:/PA/Synera_starter/src/entity/player.cpp \
@@ -2194,6 +2197,7 @@ CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj: D:/PA/Synera_starter/src/
   D:/PA/Synera_starter/src/core/bench.h \
   D:/PA/Synera_starter/src/core/board.h \
   D:/PA/Synera_starter/src/core/game.h \
+  D:/PA/Synera_starter/src/core/gamestate.h \
   D:/PA/Synera_starter/src/core/shop.h \
   D:/PA/Synera_starter/src/entity/player.h \
   D:/PA/Synera_starter/src/entity/unit.h \
@@ -2553,6 +2557,7 @@ CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj: D:/PA/Synera_starter/s
   D:/PA/Synera_starter/src/core/bench.h \
   D:/PA/Synera_starter/src/core/board.h \
   D:/PA/Synera_starter/src/core/game.h \
+  D:/PA/Synera_starter/src/core/gamestate.h \
   D:/PA/Synera_starter/src/core/shop.h \
   D:/PA/Synera_starter/src/entity/player.h \
   D:/PA/Synera_starter/src/entity/unit.h \
@@ -5351,6 +5356,8 @@ Synera_Starter_autogen/timestamp: D:/Applications/CMake/bin/cmake.exe \
   D:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/wchar.h
 
 
+D:/PA/Synera_starter/src/core/gamestate.h:
+
 D:/Qt/6.11.0/mingw_64/include/QtCore/qarraydata.h:
 
 D:/Qt/6.11.0/mingw_64/include/QtGui/qrgb.h:
@@ -5430,8 +5437,6 @@ D:/Qt/6.11.0/mingw_64/include/QtCore/qtclasshelpermacros.h:
 D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgraphicssceneevent.h:
 
 D:/Qt/6.11.0/mingw_64/include/QtCore/qsize.h:
-
-D:/Qt/6.11.0/mingw_64/include/QtCore/qfunctionaltools_impl.h:
 
 D:/Qt/6.11.0/mingw_64/include/QtCore/qbytearraylist.h:
 
@@ -5628,6 +5633,8 @@ D:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/time.h:
 D:/Qt/6.11.0/mingw_64/lib/cmake/Qt6Gui/Qt6QICOPluginAdditionalTargetInfo.cmake:
 
 D:/Qt/6.11.0/mingw_64/include/QtCore/qfloat16.h:
+
+D:/Qt/6.11.0/mingw_64/include/QtCore/qfunctionaltools_impl.h:
 
 D:/Qt/6.11.0/mingw_64/include/QtCore/qfunctionpointer.h:
 
@@ -6524,8 +6531,6 @@ D:/PA/Synera_starter/src/core/board.cpp:
 D:/Qt/6.11.0/mingw_64/include/QtCore/qdatetime.h:
 
 D:/PA/Synera_starter/src/core/game.cpp:
-
-D:/PA/Synera_starter/src/core/gamestate.h:
 
 D:/Qt/6.11.0/mingw_64/include/QtCore/QJsonObject:
 

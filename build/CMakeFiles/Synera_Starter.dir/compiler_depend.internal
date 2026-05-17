@@ -6,6 +6,7 @@ CMakeFiles/Synera_Starter.dir/Synera_Starter_autogen/mocs_compilation.cpp.obj
  D:/PA/Synera_starter/src/core/bench.h
  D:/PA/Synera_starter/src/core/board.h
  D:/PA/Synera_starter/src/core/game.h
+ D:/PA/Synera_starter/src/core/gamestate.h
  D:/PA/Synera_starter/src/core/shop.h
  D:/PA/Synera_starter/src/entity/player.h
  D:/PA/Synera_starter/src/entity/unit.h
@@ -1543,6 +1544,7 @@ CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj
  D:/PA/Synera_starter/src/core/bench.h
  D:/PA/Synera_starter/src/core/board.h
  D:/PA/Synera_starter/src/core/game.h
+ D:/PA/Synera_starter/src/core/gamestate.h
  D:/PA/Synera_starter/src/core/shop.h
 
 CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj
@@ -1909,6 +1911,7 @@ CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj
  D:/PA/Synera_starter/src/core/bench.h
  D:/PA/Synera_starter/src/core/board.h
  D:/PA/Synera_starter/src/core/game.h
+ D:/PA/Synera_starter/src/core/gamestate.h
  D:/PA/Synera_starter/src/core/shop.h
 
 CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj
@@ -2201,6 +2204,7 @@ CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj
  D:/PA/Synera_starter/src/core/bench.h
  D:/PA/Synera_starter/src/core/board.h
  D:/PA/Synera_starter/src/core/game.h
+ D:/PA/Synera_starter/src/core/gamestate.h
  D:/PA/Synera_starter/src/core/shop.h
  D:/PA/Synera_starter/src/entity/player.h
  D:/PA/Synera_starter/src/entity/unit.h
@@ -2561,6 +2565,7 @@ CMakeFiles/Synera_Starter.dir/src/gui/gamewindow.cpp.obj
  D:/PA/Synera_starter/src/core/bench.h
  D:/PA/Synera_starter/src/core/board.h
  D:/PA/Synera_starter/src/core/game.h
+ D:/PA/Synera_starter/src/core/gamestate.h
  D:/PA/Synera_starter/src/core/shop.h
  D:/PA/Synera_starter/src/entity/player.h
  D:/PA/Synera_starter/src/entity/unit.h
