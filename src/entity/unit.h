@@ -45,14 +45,18 @@ public:
 
     int hp() const { return m_hp; }
     void setHp(int hp) { m_hp = hp > 0 ? hp : 0; }
-    int maxHp() const { return m_maxHp; }
+    int maxHp() const { return m_maxHp + m_bonusMaxHp; }
     void setMaxHp(int maxHp) { m_maxHp = maxHp; }
 
-    int atk() const { return m_atk; }
+    int atk() const { return m_atk + m_bonusAtk; }
     void setAtk(int atk) { m_atk = atk; }
 
-    int range() const { return m_range; }
+    int range() const { return m_range + m_bonusRange; }
     void setRange(int range) { m_range = range; }
+
+    void setBonusMaxHp(int bonus) { m_bonusMaxHp = bonus; }
+    void setBonusAtk(int bonus) { m_bonusAtk = bonus; }
+    void setBonusRange(int bonus) { m_bonusRange = bonus; }
 
     int maxMana() const { return m_maxMana; }
     void setMaxMana(int maxMana) { m_maxMana = maxMana; }
@@ -109,8 +113,11 @@ private:
     QPoint m_position;
     int m_hp;
     int m_maxHp;
+    int m_bonusMaxHp;
     int m_atk;
+    int m_bonusAtk;
     int m_range;
+    int m_bonusRange;
     int m_maxMana;
     int m_mana;
     int m_level;

@@ -86,7 +86,7 @@ void Game::reset()
     m_enemyMaxWaves = 5;
     m_inBattle = false;
     m_player.setHp(100);
-    m_player.setGold(0);
+    m_player.setGold(100);
     m_player.setLevel(1);
     m_player.setPopulationCap(6);
     m_player.setCurStage(m_stage);
@@ -360,7 +360,8 @@ int Game::traitCount(Unit::Owner owner, Unit::Trait trait) const
     return m_playerTraitCounts[static_cast<size_t>(index)];
 }
 
-// 根据当前单位列表刷新羁绊计数缓存。
+// 根据当前单位列表刷新羁绊计数缓存， 并应用羁绊加成效果。
+// 目前有战士的两种羁绊，法师一种，弓手一种。
 void Game::refreshTraitCounts()
 {
     // 全量重算当前所有单位的羁绊计数。
@@ -368,7 +369,7 @@ void Game::refreshTraitCounts()
     m_enemyTraitCounts.fill(0);
 
     for (Unit* unit : m_units) {
-        if (!unit) {
+        if (!unit || !isUnitOnBoard(unit) || unit->status() == Unit::Status::Dead) {
             continue;
         }
 
@@ -377,11 +378,64 @@ void Game::refreshTraitCounts()
             continue;
         }
 
+        int count = (unit->level() == 2) ? 2 : 1;
+
         if (unit->owner() == Unit::Owner::EnemyCtrl) {
-            ++m_enemyTraitCounts[static_cast<size_t>(index)];
+            m_enemyTraitCounts[static_cast<size_t>(index)] += count;
         } else {
-            ++m_playerTraitCounts[static_cast<size_t>(index)];
+            m_playerTraitCounts[static_cast<size_t>(index)] += count;
         }
+    }
+
+    // 应用羁绊加成
+    for (Unit* unit : m_units) {
+        if (!unit) continue;
+
+        unit->setBonusMaxHp(0);
+        unit->setBonusAtk(0);
+        unit->setBonusRange(0);
+        // 法师羁绊加成已在skill中写出
+
+        if (!isUnitOnBoard(unit)) continue;
+
+        auto ownerCounts = (unit->owner() == Unit::Owner::EnemyCtrl) ? m_enemyTraitCounts : m_playerTraitCounts;
+
+        if (unit->trait() == Unit::Trait::Warrior) {
+            int warriorCount = ownerCounts[traitIndex(Unit::Trait::Warrior)];
+            if (warriorCount >= 2) {
+                unit->setBonusMaxHp(10);
+            }
+            if (warriorCount >= 4) {
+                unit->setBonusAtk(3);
+            }
+        }
+        else if (unit->trait() == Unit::Trait::Archer) {
+            int archerCount = ownerCounts[traitIndex(Unit::Trait::Archer)];
+            if (archerCount >= 3) {
+                unit->setBonusRange(1); // 2 -> 3
+            }
+        }
+        
+        // 保证血量不溢出
+        if (!m_inBattle) {
+            unit->setHp(unit->maxHp());
+        } else if (unit->hp() > unit->maxHp()) {
+            unit->setHp(unit->maxHp());
+        }
+    }
+
+    emit playerInfoChanged();
+    emit enemyInfoChanged();
+    
+    // 触发图元重绘，以更新羁绊变化后的血条等信息
+    for (UnitItem* item : m_unitItems) {
+        if (item) {
+            item->update();
+        }
+    }
+
+    if (m_scene) {
+        m_scene->update();
     }
 }
 

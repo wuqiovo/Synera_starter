@@ -14,8 +14,11 @@ Unit::Unit(const QString& name, Trait trait, int hp, int atk)
     , m_position(0, 0)
     , m_hp(100)      // 默认 HP（可按需调整）
     , m_maxHp(100)   // 默认最大 HP
+    , m_bonusMaxHp(0)
     , m_atk(10)      // 默认 ATK
+    , m_bonusAtk(0)
     , m_range(1)     // 默认攻击距离
+    , m_bonusRange(0)
     , m_maxMana(50)   // 默认最大法力
     , m_mana(50)      // 默认当前法力
     , m_level(1)     // 默认等级
@@ -69,7 +72,7 @@ void Unit::act(Game* game)
         }        
         break;
     case Status::Casting:
-        // 留给战士特殊技能
+        // 技能
         skill(game);
         resolveAttack(game);
         setMana(0);
@@ -124,25 +127,6 @@ Unit* Unit::findTarget(Game* game) const
     return closestTarget;
 }
 
-int Unit::distanceTo(const Unit* other) const
-{
-    if (!other) {
-        return -1;
-    }
-
-        int q1 = this->position().x() - 
-            (this->position().y() + (this->position().y() & 1)) / 2;
-    int r1 = this->position().y();
-    int s1 = -q1 - r1;
-
-        int q2 = other->position().x() - 
-            (other->position().y() + (other->position().y() & 1)) / 2;
-    int r2 = other->position().y();
-    int s2 = -q2 - r2;
-    
-    return (std::abs(q2 - q1) + std::abs(r2 - r1) + std::abs(s2 - s1)) / 2;
-}
-
 namespace {
 struct AxialCoord {
     int q;
@@ -189,6 +173,15 @@ QVector<QPoint> hexNeighbors(const QPoint& pos)
     }
     return result;
 }
+}
+
+int Unit::distanceTo(const Unit* other) const
+{
+    if (!other) {
+        return -1;
+    }
+
+    return hexDistance(position(), other->position());
 }
 
 void Unit::moveTowardsTarget(Game* game, const Unit* target)
@@ -502,13 +495,17 @@ Mage::Mage(const QString& name, int hp, int atk)
 
 void Mage::skill(Game* game)
 {
-    // 法师的特殊技能实现：目标周围一格内所有敌人
+    // 法师的特殊技能实现：目标周围一格内所有敌人（达到3法师羁绊则为两格）
     if (!game || !m_target) {
         return;
     }
     if (!game->isUnitOnBoard(m_target) || m_target->status() == Status::Dead) {
         return;
     }
+    
+    int mageCount = game->traitCount(owner(), Trait::Mage);
+    int skillDist = (mageCount >= 3) ? 2 : 1;
+    
     const QList<Unit*>& units = game->units();
     const int damage = adjustDamageOutput(20);
     for (Unit* unit : units) {
@@ -518,9 +515,8 @@ void Mage::skill(Game* game)
         if (!game->isUnitOnBoard(unit)) {
             continue;
         }
-        const int distance = std::abs(unit->position().x() - m_target->position().x()) +
-                             std::abs(unit->position().y() - m_target->position().y());
-        if (distance <= 1) {
+        const int distance = m_target->distanceTo(unit);
+        if (distance <= skillDist) {
             unit->takeDamage(damage);
         }
     }
