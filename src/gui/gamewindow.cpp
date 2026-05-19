@@ -179,7 +179,7 @@ void GameWindow::refreshInfoPanels()
     const Player* player = m_game->player();
     int currentPop = 0;
     if (m_game) {
-        // Here we just use countAliveUnits or write a loop in Game to get current player population on board
+        // 这里只使用 countAliveUnits 或在 Game 中写循环以获取当前场上的玩家单位数
         const auto& units = m_game->units();
         for (auto* unit : units) {
             if (unit && unit->owner() == Unit::Owner::PlayerCtrl && m_game->isUnitOnBoard(unit)) {

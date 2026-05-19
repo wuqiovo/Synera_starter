@@ -1,6 +1,7 @@
 #include "unit.h"
 #include "core/game.h"
 #include "core/board.h"
+#include "equipment.h"
 #include <QList>
 #include <QHash>
 #include <QQueue>
@@ -29,6 +30,8 @@ Unit::Unit(const QString& name, Trait trait, int hp, int atk)
     , m_stunTurns(0)
     , m_damageOutputReductionTurns(0)
     , m_damageOutputReductionRatio(0.0f)
+    , m_actionPacingCounter(0)
+    , m_equipment(nullptr)
 {
     if (hp >= 0) {
         m_hp = hp;
@@ -39,8 +42,45 @@ Unit::Unit(const QString& name, Trait trait, int hp, int atk)
     }
 }
 
+int Unit::maxHp() const { 
+    return m_maxHp + m_bonusMaxHp + (m_equipment ? m_equipment->bonusHp() : 0); 
+}
+
+int Unit::atk() const { 
+    return m_atk + m_bonusAtk + (m_equipment ? m_equipment->bonusAtk() : 0); 
+}
+
+int Unit::range() const { 
+    return m_range + m_bonusRange + (m_equipment ? m_equipment->bonusRange() : 0); 
+}
+
+int Unit::maxMana() const { 
+    int m = m_maxMana + (m_equipment ? m_equipment->bonusMaxMana() : 0);
+    return m > 0 ? m : 1; 
+}
+
+bool Unit::canActThisTick() const
+{
+    bool hasGloves = (m_equipment && m_equipment->type() == Equipment::Type::Gloves);
+    if (!hasGloves) {
+        if (m_actionPacingCounter + 1 < 2) {
+            return false;
+        }
+    }
+    return true;
+}
+
 void Unit::act(Game* game)
 {
+    bool hasGloves = (m_equipment && m_equipment->type() == Equipment::Type::Gloves);
+    if (!hasGloves) {
+        m_actionPacingCounter++;
+        if (m_actionPacingCounter < 2) {
+            return; // 跳过本次行动滴答
+        }
+        m_actionPacingCounter = 0;
+    }
+
     if (!prepareForAct(game)) {
         return;
     }
@@ -90,9 +130,13 @@ void Unit::upgrade()
 {
     // 默认升级行为
     ++m_level;
-    m_maxHp *= 1.5;
-    m_atk *= 1.5;
-    m_hp = m_maxHp; // 升级后恢复 HP
+    m_maxHp *= 2;
+    m_atk *= 2;
+    m_hp = maxHp(); // 升级后恢复 HP（含装备加成）
+    // 升级后确保 mana 不超过 maxMana（装备可能降低 maxMana）。
+    if (m_mana > maxMana()) {
+        m_mana = maxMana();
+    }
 }
 
 void Unit::skill(Game* game)
@@ -312,10 +356,6 @@ void Unit::attackTarget(Unit* target)
 bool Unit::prepareForAct(Game* game)
 {
     // 预处理逻辑：在每轮行动前执行的准备工作
-    if (m_hp <= 0 && m_status != Status::Dead) {
-        setStatus(Status::Dead);
-    }
-
     if (m_damageOutputReductionTurns > 0) {
         --m_damageOutputReductionTurns;
         if (m_damageOutputReductionTurns == 0) {
@@ -442,8 +482,33 @@ void Unit::takeDamage(int damage)
         damage = static_cast<int>(damage * (1.0f + m_vunerableDamageIncreaseRatio));
     }
     setHp(m_hp - damage);
-    if (m_hp <= 0) {
-        setStatus(Status::Dead);
+}
+
+void Unit::setEquipment(Equipment* eq)
+{
+    // 卸下旧装备时，移除对应的 hp 加成（但不低于基础 m_maxHp），
+    // 并将 mana 限制在卸下后的 maxMana 范围内。
+    if (m_equipment) {
+        int oldBonusHp = m_equipment->bonusHp();
+        if (oldBonusHp > 0) {
+            m_hp = qMax(m_hp - oldBonusHp, m_maxHp);
+        }
+    }
+
+    m_equipment = eq;
+
+    // 装上新装备时，同步增加当前 hp，
+    // 并将 mana 限制在新的 maxMana 范围内。
+    if (m_equipment) {
+        int newBonusHp = m_equipment->bonusHp();
+        if (newBonusHp > 0) {
+            m_hp += newBonusHp;
+        }
+        // 水晶等装备会降低 maxMana，需要确保 mana 不超过新的上限。
+        int newMaxMana = maxMana();
+        if (m_mana != newMaxMana) {
+            m_mana = newMaxMana;
+        }
     }
 }
 

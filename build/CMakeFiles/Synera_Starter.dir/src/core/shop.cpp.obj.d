@@ -352,7 +352,9 @@ CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.obj: \
  D:/PA/Synera_starter/src/entity/unit.h \
  D:\PA\Synera_starter\src\core\bench.h \
  D:/PA/Synera_starter/src/entity/player.h \
+ D:/PA/Synera_starter/src/entity/equipment.h \
  D:\PA\Synera_starter\src\core\gamestate.h \
+ D:/PA/Synera_starter/src/entity/equipment.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/QRandomGenerator \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qrandom.h \
  D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/random \

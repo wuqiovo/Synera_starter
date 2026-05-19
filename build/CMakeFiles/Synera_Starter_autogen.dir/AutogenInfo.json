@@ -324,6 +324,12 @@
 			null
 		],
 		[
+			"D:/PA/Synera_starter/src/entity/equipment.h",
+			"MU",
+			"GH2DYT6SNJ/moc_equipment.cpp",
+			null
+		],
+		[
 			"D:/PA/Synera_starter/src/entity/player.h",
 			"MU",
 			"GH2DYT6SNJ/moc_player.cpp",
@@ -333,6 +339,12 @@
 			"D:/PA/Synera_starter/src/entity/unit.h",
 			"MU",
 			"GH2DYT6SNJ/moc_unit.cpp",
+			null
+		],
+		[
+			"D:/PA/Synera_starter/src/gui/equipmentslot.h",
+			"MU",
+			"MXUWEOXILK/moc_equipmentslot.cpp",
 			null
 		],
 		[
@@ -436,8 +448,10 @@
 		[ "D:/PA/Synera_starter/src/core/board.cpp", "MU", null ],
 		[ "D:/PA/Synera_starter/src/core/game.cpp", "MU", null ],
 		[ "D:/PA/Synera_starter/src/core/shop.cpp", "MU", null ],
+		[ "D:/PA/Synera_starter/src/entity/equipment.cpp", "MU", null ],
 		[ "D:/PA/Synera_starter/src/entity/player.cpp", "MU", null ],
 		[ "D:/PA/Synera_starter/src/entity/unit.cpp", "MU", null ],
+		[ "D:/PA/Synera_starter/src/gui/equipmentslot.cpp", "MU", null ],
 		[ "D:/PA/Synera_starter/src/gui/gamewindow.cpp", "MU", null ],
 		[ "D:/PA/Synera_starter/src/gui/griditem.cpp", "MU", null ],
 		[ "D:/PA/Synera_starter/src/gui/startwindow.cpp", "MU", null ],

@@ -2,7 +2,9 @@
 #include "entity/unit.h"
 #include "gui/griditem.h"
 #include "gui/unititem.h"
+#include "gui/equipmentslot.h"
 #include "core/gamestate.h"
+#include "entity/equipment.h"
 #include <QFile>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -20,6 +22,7 @@
 #include <QTimer>
 #include <QPen>
 #include <QtMath>
+#include <QRandomGenerator>
 #include <algorithm>
 
 namespace {
@@ -46,9 +49,11 @@ Game::Game(QObject* parent)
     , m_enemyUnitCount(0)
     , m_inBattle(false)
     , m_battleTimer(new QTimer(this))
-    , m_battleTickMs(240)
+    , m_battleTickMs(120)
     , m_activeActionUnitId(-1)
     , m_battleTurnIndex(0)
+    , m_dragEqActive(false)
+    , m_activeEqSlotIndex(-1)
     , m_rows(Board::ROWS)
     , m_cols(Board::COLS)
     , m_radius(46.0)
@@ -167,16 +172,19 @@ void Game::endDeployment()
             u.id = unit->id();
             u.name = unit->name();
             u.position = unit->position();
-            u.hp = unit->hp();
-            u.maxHp = unit->maxHp() - unit->bonusMaxHp();
-            u.atk = unit->atk() - unit->bonusAtk();
-            u.range = unit->range() - unit->bonusRange();
-            u.maxMana = unit->maxMana();
+            // 保存纯基础值，不含羁绊加成和装备加成，恢复时由 setEquipment 自动处理装备 hp。
+            int eqBonusHp = unit->equipment() ? unit->equipment()->bonusHp() : 0;
+            u.hp = unit->hp() - eqBonusHp;
+            u.maxHp = unit->maxHp() - unit->bonusMaxHp() - eqBonusHp;
+            u.atk = unit->atk() - unit->bonusAtk() - (unit->equipment() ? unit->equipment()->bonusAtk() : 0);
+            u.range = unit->range() - unit->bonusRange() - (unit->equipment() ? unit->equipment()->bonusRange() : 0);
+            u.maxMana = unit->maxMana() - (unit->equipment() ? unit->equipment()->bonusMaxMana() : 0);
             u.mana = unit->mana();
             u.owner = unit->owner();
             u.status = unit->status();
             u.trait = unit->trait();
             u.level = unit->level();
+            u.equipmentType = unit->equipment() ? unit->equipment()->type() : Equipment::Type::None;
             m_preBattlePlayerUnits.push_back(u);
         }
     }
@@ -255,17 +263,27 @@ GameState Game::captureState() const
         u.id = unit->id();
         u.name = unit->name();
         u.position = unit->position();
-        u.hp = unit->hp();
-        u.maxHp = unit->maxHp() - unit->bonusMaxHp();
-        u.atk = unit->atk() - unit->bonusAtk();
-        u.range = unit->range() - unit->bonusRange();
-        u.maxMana = unit->maxMana();
+        // 存档中保存纯基础值，不含羁绊加成和装备加成，恢复时由 setEquipment 自动处理装备 hp。
+        int eqBonusHp = unit->equipment() ? unit->equipment()->bonusHp() : 0;
+        u.hp = unit->hp() - eqBonusHp;
+        u.maxHp = unit->maxHp() - unit->bonusMaxHp() - eqBonusHp;
+        u.atk = unit->atk() - unit->bonusAtk() - (unit->equipment() ? unit->equipment()->bonusAtk() : 0);
+        u.range = unit->range() - unit->bonusRange() - (unit->equipment() ? unit->equipment()->bonusRange() : 0);
+        u.maxMana = unit->maxMana() - (unit->equipment() ? unit->equipment()->bonusMaxMana() : 0);
         u.mana = unit->mana();
         u.owner = unit->owner();
         u.status = unit->status();
         u.trait = unit->trait();
         u.level = unit->level();
+        u.equipmentType = unit->equipment() ? unit->equipment()->type() : Equipment::Type::None;
         state.units.push_back(u);
+    }
+
+    // 保存玩家装备栏状态。
+    state.player.inventoryTypes.resize(5);
+    for (int i = 0; i < 5; ++i) {
+        Equipment* eq = m_player.inventory(i);
+        state.player.inventoryTypes[i] = eq ? eq->type() : Equipment::Type::None;
     }
 
     state.benchUnitIndices.resize(m_bench.capacity());
@@ -284,6 +302,8 @@ GameState Game::captureState() const
         }
         state.benchUnitIndices[slot] = index;
     }
+
+    state.nextUnitId = Unit::getNextId();
 
     return state;
 }
@@ -307,6 +327,21 @@ void Game::loadFromState(const GameState& state)
     m_player.setPopulationCap(state.player.populationCap);
     m_player.setCurStage(state.player.stage);
     m_player.setPlayerName(state.player.name);
+
+    // 清理现有装备栏并从存档恢复（避免旧装备泄露）。
+    for (int i = 0; i < 5; ++i) {
+        m_player.removeInventory(i);
+    }
+    for (int i = 0; i < 5; ++i) {
+        Equipment::Type t = (i < state.player.inventoryTypes.size())
+            ? state.player.inventoryTypes[i]
+            : Equipment::Type::None;
+        if (t != Equipment::Type::None) {
+            m_player.setInventory(i, new Equipment(t));
+        } else {
+            m_player.setInventory(i, nullptr);
+        }
+    }
 
     m_units.reserve(state.units.size());
     for (const UnitState& u : state.units) {
@@ -339,6 +374,12 @@ void Game::loadFromState(const GameState& state)
         unit->setTrait(u.trait);
         unit->setLevel(u.level);
         unit->setPosition(u.position);
+        if (u.equipmentType != Equipment::Type::None) {
+            unit->setEquipment(new Equipment(u.equipmentType));
+        }
+        if (u.id != -1) {
+            unit->setId(u.id);
+        }
         m_units.append(unit);
         if (u.owner == Unit::Owner::EnemyCtrl) {
             ++m_enemyUnitCount;
@@ -366,6 +407,19 @@ void Game::loadFromState(const GameState& state)
             m_board.removeUnit(unit);
             m_bench.addUnit(unit, slot);
         }
+    }
+
+    if (state.nextUnitId > 0) {
+        Unit::setNextId(state.nextUnitId);
+    } else {
+        // 兼容没有 nextUnitId 的旧存档：通过 maxId 确保不会重叠
+        int maxId = Unit::getNextId() - 1;
+        for (Unit* u : m_units) {
+            if (u && u->id() > maxId) {
+                maxId = u->id();
+            }
+        }
+        Unit::setNextId(maxId + 1);
     }
 
     buildScene();
@@ -432,8 +486,8 @@ void Game::refreshTraitCounts()
 
         if (unit->trait() == Unit::Trait::Warrior) {
             const int warriorCount = ownerCounts[traitIndex(Unit::Trait::Warrior)];
-            const int targetHpBonus  = (warriorCount >= 2) ? 10 : 0;
-            const int targetAtkBonus = (warriorCount >= 4) ? 3  : 0;
+            const int targetHpBonus  = (warriorCount >= 2) ? 30 : 0;
+            const int targetAtkBonus = (warriorCount >= 4) ? 5  : 0;
             if (unit->bonusMaxHp() != targetHpBonus) unit->setBonusMaxHp(targetHpBonus);
             if (unit->bonusAtk()   != targetAtkBonus) unit->setBonusAtk(targetAtkBonus);
             if (unit->bonusRange() != 0) unit->setBonusRange(0);
@@ -492,15 +546,22 @@ bool Game::saveToFile(const QString& filePath) const
     player["stage"] = state.player.stage;
     player["round"] = state.player.round;
     player["name"] = state.player.name;
+    QJsonArray inventory;
+    for (int i = 0; i < state.player.inventoryTypes.size(); ++i) {
+        inventory.append(static_cast<int>(state.player.inventoryTypes[i]));
+    }
+    player["inventory"] = inventory;
     root["player"] = player;
 
     root["enemyDefeatedWaves"] = state.enemyDefeatedWaves;
     root["enemyMaxWaves"] = state.enemyMaxWaves;
     root["inBattle"] = state.inBattle;
+    root["nextUnitId"] = state.nextUnitId;
 
     QJsonArray units;
     for (const UnitState& u : state.units) {
         QJsonObject obj;
+        obj["id"] = u.id;
         obj["name"] = u.name;
         obj["x"] = u.position.x();
         obj["y"] = u.position.y();
@@ -513,6 +574,8 @@ bool Game::saveToFile(const QString& filePath) const
         obj["owner"] = static_cast<int>(u.owner);
         obj["status"] = static_cast<int>(u.status);
         obj["trait"] = static_cast<int>(u.trait);
+        obj["level"] = u.level;
+        obj["equipment"] = static_cast<int>(u.equipmentType);
         units.append(obj);
     }
     root["units"] = units;
@@ -558,14 +621,32 @@ bool Game::loadFromFile(const QString& filePath)
     state.player.round = player.value("round").toInt(1);
     state.player.name = player.value("name").toString();
 
-    state.enemyDefeatedWaves = root.value("enemyDefeatedWaves").toInt(0); // Old saves might be lost, that's fine
+    // 读取玩家装备栏（旧存档可能没有此字段，全部默认为 None）。
+    state.player.inventoryTypes.resize(5);
+    state.player.inventoryTypes.fill(Equipment::Type::None);
+    if (player.contains("inventory")) {
+        const QJsonArray invArr = player.value("inventory").toArray();
+        const int count = qMin(invArr.size(), 5);
+        for (int i = 0; i < count; ++i) {
+            state.player.inventoryTypes[i] = static_cast<Equipment::Type>(invArr.at(i).toInt(0));
+        }
+    }
+
+    state.enemyDefeatedWaves = root.value("enemyDefeatedWaves").toInt(0); // 旧存档可能会丢失此项，没关系
     state.enemyMaxWaves = root.value("enemyMaxWaves").toInt(5);
     state.inBattle = root.value("inBattle").toBool(false);
+    
+    if (root.contains("nextUnitId")) {
+        state.nextUnitId = root.value("nextUnitId").toInt();
+    } else {
+        state.nextUnitId = 0;
+    }
 
     const QJsonArray units = root.value("units").toArray();
     for (const QJsonValue& value : units) {
         const QJsonObject obj = value.toObject();
         UnitState u;
+        u.id = obj.value("id").toInt(-1);
         u.name = obj.value("name").toString();
         u.position = QPoint(obj.value("x").toInt(-1), obj.value("y").toInt(-1));
         u.hp = obj.value("hp").toInt(0);
@@ -577,6 +658,8 @@ bool Game::loadFromFile(const QString& filePath)
         u.owner = static_cast<Unit::Owner>(obj.value("owner").toInt(0));
         u.status = static_cast<Unit::Status>(obj.value("status").toInt(0));
         u.trait = static_cast<Unit::Trait>(obj.value("trait").toInt(0));
+        u.level = obj.value("level").toInt(1);
+        u.equipmentType = static_cast<Equipment::Type>(obj.value("equipment").toInt(0));
         state.units.push_back(u);
     }
 
@@ -862,6 +945,11 @@ void Game::restorePlayerUnits()
         unit->setStatus(Unit::Status::Idle);
         unit->setTrait(u.trait);
         unit->setLevel(u.level);
+
+        // 恢复装备。
+        if (u.equipmentType != Equipment::Type::None) {
+            unit->setEquipment(new Equipment(u.equipmentType));
+        }
 
         m_units.append(unit);
         
@@ -1204,6 +1292,11 @@ void Game::buildScene()
     m_benchRects.clear();
     m_benchLabel = nullptr;
     m_shopProxy = nullptr;
+    // m_scene->clear() 已销毁装备 UI 相关图元，必须同步重置这些缓存指针，
+    // 否则后续 buildEquipmentUI() 中的清理逻辑会对悬空指针执行 delete 导致崩溃。
+    m_eqSlotItems.clear();
+    m_eqTitleLabel = nullptr;
+    m_dragEqIcon = nullptr;
 
     // 绘制六边形网格
     QRectF totalBounds;
@@ -1282,6 +1375,7 @@ void Game::buildScene()
     }
     
     buildShopUI();
+    buildEquipmentUI();
 
     // 调整场景边界以适应所有内容，留出额外空间避免视觉拥挤。
     if (m_shopProxy) {
@@ -1434,7 +1528,7 @@ void Game::buildShopUI()
     // 根据备战区位置计算商店坐标
     qreal boardLeft = gridToWorld(0, 0).x() - m_radius;
     qreal shopX = boardLeft - 20;
-    qreal shopY = m_benchTop + 90.0;
+    qreal shopY = m_benchTop + 240.0;
     m_shopProxy->setPos(shopX, shopY);
 
     // 计算出售区域判定矩形（布局margin:0, spacing:10, 每个格子宽90）
@@ -1496,6 +1590,150 @@ void Game::updateShopUI()
     }
     if (m_shopUpgradeBtn) {
         m_shopUpgradeBtn->setEnabled(!m_inBattle);
+    }
+}
+
+void Game::buildEquipmentUI()
+{
+    for (auto slot : m_eqSlotItems) {
+        m_scene->removeItem(slot);
+        delete slot;
+    }
+    m_eqSlotItems.clear();
+
+    if (m_eqTitleLabel) {
+        m_scene->removeItem(m_eqTitleLabel);
+        delete m_eqTitleLabel;
+        m_eqTitleLabel = nullptr;
+    }
+    if (m_dragEqIcon) {
+        m_scene->removeItem(m_dragEqIcon);
+        delete m_dragEqIcon;
+        m_dragEqIcon = nullptr;
+    }
+
+    qreal boardLeft = gridToWorld(0, 0).x() - m_radius;
+    qreal shopX = boardLeft - 20;
+    qreal eqX = shopX; // 将装备栏放置在原商店位置
+    qreal eqY = m_benchTop + 90.0;
+
+    m_eqTitleLabel = new QGraphicsSimpleTextItem(QString::fromUtf8("装备栏"));
+    QFont f = m_eqTitleLabel->font();
+    f.setPointSize(16);
+    f.setBold(true);
+    m_eqTitleLabel->setFont(f);
+    m_eqTitleLabel->setBrush(QColor(240, 240, 240));
+    m_eqTitleLabel->setPos(eqX, eqY);
+    m_scene->addItem(m_eqTitleLabel);
+
+    for (int i = 0; i < 5; ++i) {
+        auto slot = new EquipmentSlotItem(i);
+        slot->setPos(eqX + i * 100, eqY + 36);
+        m_scene->addItem(slot);
+        m_eqSlotItems.push_back(slot);
+
+        connect(slot, &EquipmentSlotItem::discardClicked, this, &Game::handleEqDiscardClicked);
+        connect(slot, &EquipmentSlotItem::dragStarted, this, &Game::handleEqDragStarted);
+        connect(slot, &EquipmentSlotItem::dragMoved, this, &Game::handleEqDragMoved);
+        connect(slot, &EquipmentSlotItem::dragDropped, this, &Game::handleEqDragDropped);
+    }
+
+    updateEquipmentUI();
+}
+
+void Game::updateEquipmentUI()
+{
+    for (int i = 0; i < 5; ++i) {
+        m_eqSlotItems[i]->setEquipment(m_player.inventory(i));
+    }
+}
+
+void Game::handleEqDiscardClicked(int slotIndex)
+{
+    m_player.removeInventory(slotIndex);
+    updateEquipmentUI();
+    emit playerInfoChanged();
+}
+
+void Game::handleEqDragStarted(int slotIndex, QPointF scenePos)
+{
+    Equipment* eq = m_player.inventory(slotIndex);
+    if (!eq) return;
+
+    m_dragEqActive = true;
+    m_activeEqSlotIndex = slotIndex;
+
+    if (!m_dragEqIcon) {
+        m_dragEqIcon = new QGraphicsSimpleTextItem(QString::fromUtf8("📦"));
+        QFont f = m_dragEqIcon->font();
+        f.setPointSize(18);
+        m_dragEqIcon->setFont(f);
+        m_dragEqIcon->setBrush(QColor(255, 200, 100));
+        m_scene->addItem(m_dragEqIcon);
+    }
+    
+    m_dragEqIcon->setPos(scenePos);
+    m_dragEqIcon->setZValue(kZDraggingUnit + 1.0);
+    m_dragEqIcon->show();
+}
+
+void Game::handleEqDragMoved(int slotIndex, QPointF scenePos)
+{
+    if (!m_dragEqActive || m_activeEqSlotIndex != slotIndex) return;
+
+    if (m_dragEqIcon) {
+        m_dragEqIcon->setPos(scenePos - QPointF(12, 12));
+    }
+    
+    UnitItem* targetItem = nullptr;
+    for (auto item : m_unitItems) {
+        if (item->boundingRect().translated(item->pos()).contains(scenePos)) {
+            if (item->unit() && item->unit()->owner() == Unit::Owner::PlayerCtrl) {
+                targetItem = item;
+                break;
+            }
+        }
+    }
+    
+    for (auto item : m_unitItems) {
+        if (item->unit() && item->unit()->owner() == Unit::Owner::PlayerCtrl) {
+            item->setActive(item == targetItem);
+        }
+    }
+}
+
+void Game::handleEqDragDropped(int slotIndex, QPointF scenePos)
+{
+    if (!m_dragEqActive || m_activeEqSlotIndex != slotIndex) return;
+
+    m_dragEqActive = false;
+    m_activeEqSlotIndex = -1;
+
+    if (m_dragEqIcon) {
+        m_dragEqIcon->hide();
+    }
+    
+    UnitItem* targetItem = nullptr;
+    for (auto item : m_unitItems) {
+        item->setActive(false);
+        if (item->boundingRect().translated(item->pos()).contains(scenePos)) {
+            if (item->unit() && item->unit()->owner() == Unit::Owner::PlayerCtrl) {
+                targetItem = item;
+            }
+        }
+    }
+    
+    if (targetItem) {
+        Unit* u = targetItem->unit();
+        Equipment* dropEq = m_player.inventory(slotIndex);
+        Equipment* oldEq = u->equipment();
+        
+        u->setEquipment(dropEq);
+        m_player.setInventory(slotIndex, oldEq);
+        
+        updateEquipmentUI();
+        targetItem->update();
+        emit playerInfoChanged();
     }
 }
 
@@ -1661,7 +1899,7 @@ void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
     m_player.reduceHp(damage);
     emit playerInfoChanged();
     if (m_player.Hp() <= 0) {
-        emit gameOver(); // Need to define this signal or handle it.
+        emit gameOver(); // 需要定义此信号或进行处理。
     }
 }
 
@@ -1709,25 +1947,37 @@ void Game::battleTick()
         return;
     }
 
-    // 检查并集中移除血量归零的单位
-    for (Unit* unit : m_units) {
-        if (unit && unit->hp() <= 0 && unit->status() != Unit::Status::Dead) {
-            unit->setStatus(Unit::Status::Dead);
-        }
-        if (unit && unit->status() == Unit::Status::Dead) {
-            requestRemoveUnit(unit);
-        }
-    }
-    flushUnitRemovals();
-
     Unit* unit = nextActingUnit();
     if (unit) {
-        setActiveUnitItem(unit->id());
+        if (unit->canActThisTick()) {
+            setActiveUnitItem(unit->id());
+        } else {
+            setActiveUnitItem(-1);
+        }
         unit->act(this);
     } else {
         setActiveUnitItem(-1);
     }
 
+    // 检查并集中移除血量归零的单位
+    for (Unit* u : m_units) {
+        if (u && u->hp() <= 0 && u->status() != Unit::Status::Dead) {
+            u->setStatus(Unit::Status::Dead);
+            // Temporarily 100% chance to drop equipment if enemy
+            if (u->owner() == Unit::Owner::EnemyCtrl) {
+                if (QRandomGenerator::global()->bounded(100) < 100) {
+                    Equipment::Type types[] = { Equipment::Type::Sword, Equipment::Type::Crystal, Equipment::Type::armor, Equipment::Type::Gloves };
+                    Equipment::Type randomType = types[QRandomGenerator::global()->bounded(4)];
+                    m_player.addInventory(new Equipment(randomType));
+                    updateEquipmentUI();
+                    emit playerInfoChanged();
+                }
+            }
+        }
+        if (u && u->status() == Unit::Status::Dead) {
+            requestRemoveUnit(u);
+        }
+    }
     flushUnitRemovals();
 
     // 更新单位位置与显示情况

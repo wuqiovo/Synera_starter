@@ -8,4 +8,5 @@ Player::Player(const QString& name)
     , level(1)
     , populationCap(6)
     , curStage(1)
+    , m_inventory{nullptr, nullptr, nullptr, nullptr, nullptr}
 {}

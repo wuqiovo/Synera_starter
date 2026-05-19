@@ -63,10 +63,14 @@ Synera_Starter_autogen/timestamp: D:/Applications/CMake/bin/cmake.exe \
   D:/PA/Synera_starter/src/core/gamestate.h \
   D:/PA/Synera_starter/src/core/shop.cpp \
   D:/PA/Synera_starter/src/core/shop.h \
+  D:/PA/Synera_starter/src/entity/equipment.cpp \
+  D:/PA/Synera_starter/src/entity/equipment.h \
   D:/PA/Synera_starter/src/entity/player.cpp \
   D:/PA/Synera_starter/src/entity/player.h \
   D:/PA/Synera_starter/src/entity/unit.cpp \
   D:/PA/Synera_starter/src/entity/unit.h \
+  D:/PA/Synera_starter/src/gui/equipmentslot.cpp \
+  D:/PA/Synera_starter/src/gui/equipmentslot.h \
   D:/PA/Synera_starter/src/gui/gamewindow.cpp \
   D:/PA/Synera_starter/src/gui/gamewindow.h \
   D:/PA/Synera_starter/src/gui/griditem.cpp \
@@ -692,6 +696,8 @@ D:/Applications/CMake/share/cmake-4.3/Modules/Platform/Windows-GNU-C-ABI.cmake:
 
 D:/Qt/6.11.0/mingw_64/include/QtCore/QPoint:
 
+D:/PA/Synera_starter/src/entity/equipment.h:
+
 D:/Applications/CMake/share/cmake-4.3/Modules/Platform/Linker/Windows-CXX.cmake:
 
 D:/Applications/CMake/share/cmake-4.3/Modules/CMakeGenericSystem.cmake:
@@ -752,9 +758,9 @@ D:/PA/Synera_starter/src/core/board.cpp:
 
 D:/Applications/CMake/share/cmake-4.3/Modules/FindPackageMessage.cmake:
 
-D:/Qt/6.11.0/mingw_64/include/QtCore/qbytearraylist.h:
-
 D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/uses_allocator_args.h:
+
+D:/Qt/6.11.0/mingw_64/include/QtCore/qbytearraylist.h:
 
 D:/Applications/CMake/share/cmake-4.3/Modules/FindThreads.cmake:
 
@@ -809,6 +815,8 @@ D:/Qt/6.11.0/mingw_64/include/QtCore/qmap.h:
 D:/Qt/6.11.0/mingw_64/lib/cmake/Qt6WidgetsTools/Qt6WidgetsToolsTargets.cmake:
 
 D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/string_view:
+
+D:/PA/Synera_starter/src/entity/equipment.cpp:
 
 D:/Applications/CMake/share/cmake-4.3/Modules/Platform/Windows-GNU-CXX.cmake:
 
@@ -866,9 +874,9 @@ D:/PA/Synera_starter/src/core/game.cpp:
 
 D:/PA/Synera_starter/src/core/gamestate.h:
 
-D:/PA/Synera_starter/src/core/shop.cpp:
-
 D:/PA/Synera_starter/src/entity/player.h:
+
+D:/PA/Synera_starter/src/core/shop.cpp:
 
 D:/PA/Synera_starter/src/core/shop.h:
 
@@ -887,6 +895,12 @@ D:/Qt/6.11.0/mingw_64/include/QtCore/qexceptionhandling.h:
 D:/PA/Synera_starter/src/entity/unit.h:
 
 D:/Qt/6.11.0/mingw_64/include/QtCore/qdatastream.h:
+
+D:/PA/Synera_starter/src/gui/equipmentslot.cpp:
+
+D:/Qt/6.11.0/mingw_64/include/QtCore/qmargins.h:
+
+D:/PA/Synera_starter/src/gui/equipmentslot.h:
 
 D:/Qt/6.11.0/mingw_64/include/QtGui/qbitmap.h:
 
@@ -1134,8 +1148,6 @@ D:/Qt/6.11.0/mingw_64/lib/cmake/Qt6CoreTools/Qt6CoreToolsConfigVersionImpl.cmake
 
 D:/Qt/6.11.0/mingw_64/include/QtCore/qmalloc.h:
 
-D:/Qt/6.11.0/mingw_64/include/QtCore/qmargins.h:
-
 D:/Qt/6.11.0/mingw_64/include/QtCore/qmath.h:
 
 D:/Qt/6.11.0/mingw_64/include/QtCore/qnamespace.h:
@@ -1249,8 +1261,6 @@ D:/Qt/6.11.0/mingw_64/include/QtCore/qtconfiginclude.h:
 D:/Qt/6.11.0/mingw_64/include/QtGui/qfontinfo.h:
 
 D:/Qt/6.11.0/mingw_64/include/QtCore/qtconfigmacros.h:
-
-D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unordered_set.h:
 
 D:/Qt/6.11.0/mingw_64/include/QtCore/qtcoreexports.h:
 
@@ -1758,9 +1768,11 @@ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stri
 
 D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stringfwd.h:
 
+D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/utility.h:
+
 D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unique_ptr.h:
 
-D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/utility.h:
+D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/unordered_set.h:
 
 D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/uses_allocator.h:
 

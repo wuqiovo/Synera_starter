@@ -46,7 +46,14 @@ template <> constexpr inline auto Game::qt_create_metaobjectdata<qt_meta_tag_ZN4
         "battleStateChanged",
         "inBattle",
         "gameOver",
-        "enemyDefeated"
+        "enemyDefeated",
+        "handleEqDiscardClicked",
+        "slotIndex",
+        "handleEqDragStarted",
+        "QPointF",
+        "scenePos",
+        "handleEqDragMoved",
+        "handleEqDragDropped"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -64,6 +71,22 @@ template <> constexpr inline auto Game::qt_create_metaobjectdata<qt_meta_tag_ZN4
         QtMocHelpers::SignalData<void()>(7, 2, QMC::AccessPublic, QMetaType::Void),
         // Signal 'enemyDefeated'
         QtMocHelpers::SignalData<void()>(8, 2, QMC::AccessPublic, QMetaType::Void),
+        // Slot 'handleEqDiscardClicked'
+        QtMocHelpers::SlotData<void(int)>(9, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 10 },
+        }}),
+        // Slot 'handleEqDragStarted'
+        QtMocHelpers::SlotData<void(int, QPointF)>(11, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 10 }, { 0x80000000 | 12, 13 },
+        }}),
+        // Slot 'handleEqDragMoved'
+        QtMocHelpers::SlotData<void(int, QPointF)>(14, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 10 }, { 0x80000000 | 12, 13 },
+        }}),
+        // Slot 'handleEqDragDropped'
+        QtMocHelpers::SlotData<void(int, QPointF)>(15, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 10 }, { 0x80000000 | 12, 13 },
+        }}),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -93,6 +116,10 @@ void Game::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
         case 3: _t->battleStateChanged((*reinterpret_cast<std::add_pointer_t<bool>>(_a[1]))); break;
         case 4: _t->gameOver(); break;
         case 5: _t->enemyDefeated(); break;
+        case 6: _t->handleEqDiscardClicked((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 7: _t->handleEqDragStarted((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
+        case 8: _t->handleEqDragMoved((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
+        case 9: _t->handleEqDragDropped((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
         default: ;
         }
     }
@@ -131,14 +158,14 @@ int Game::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 6)
+        if (_id < 10)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 6;
+        _id -= 10;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 6)
+        if (_id < 10)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 6;
+        _id -= 10;
     }
     return _id;
 }

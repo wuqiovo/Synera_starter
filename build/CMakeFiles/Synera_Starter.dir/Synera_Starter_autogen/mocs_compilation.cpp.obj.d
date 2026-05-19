@@ -353,40 +353,26 @@ CMakeFiles/Synera_Starter.dir/Synera_Starter_autogen/mocs_compilation.cpp.obj: \
  D:/PA/Synera_starter/src/core/shop.h \
  D:/PA/Synera_starter/src/entity\unit.h \
  D:/PA/Synera_starter/src/entity/player.h \
+ D:/PA/Synera_starter/src/entity/equipment.h \
  D:/PA/Synera_starter/src/core/gamestate.h \
+ D:/PA/Synera_starter/src/entity/equipment.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qtmochelpers.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qtmocconstants.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/q20algorithm.h \
- D:\PA\Synera_starter\build\Synera_Starter_autogen\MXUWEOXILK/moc_gamewindow.cpp \
- D:/PA/Synera_starter/src/gui/gamewindow.h \
- D:/Qt/6.11.0/mingw_64/include/QtWidgets/QMainWindow \
- D:/Qt/6.11.0/mingw_64/include/QtWidgets/qmainwindow.h \
+ D:\PA\Synera_starter\build\Synera_Starter_autogen\MXUWEOXILK/moc_equipmentslot.cpp \
+ D:/PA/Synera_starter/src/gui/equipmentslot.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/QGraphicsObject \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgraphicsitem.h \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgetsglobal.h \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgets-config.h \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgetsexports.h \
- D:/Qt/6.11.0/mingw_64/include/QtWidgets/qwidget.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qwindowdefs.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qwindowdefs_win.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qaction.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qkeysequence.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qicon.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qpixmap.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qpaintdevice.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qshareddata.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qimage.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qpixelformat.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qtransform.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qregion.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qspan.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cassert \
- D:/Qt/6.11.0/mingw_64/include/QtCore/q20iterator.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qline.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qvariant.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qdebug.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qtextstream.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qcontiguouscache.h \
  D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/climits \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qsharedpointer.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qshareddata.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qsharedpointer_impl.h \
  D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/set \
  D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_set.h \
@@ -398,6 +384,27 @@ CMakeFiles/Synera_Starter.dir/Synera_Starter_autogen/mocs_compilation.cpp.obj: \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qset.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qvarlengtharray.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qalloc.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qpainterpath.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qtransform.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qregion.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qwindowdefs.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qwindowdefs_win.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qspan.h \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cassert \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/q20iterator.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qline.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qpixmap.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qpaintdevice.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qimage.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qpixelformat.h \
+ D:\PA\Synera_starter\build\Synera_Starter_autogen\MXUWEOXILK/moc_gamewindow.cpp \
+ D:/PA/Synera_starter/src/gui/gamewindow.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/QMainWindow \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qmainwindow.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qwidget.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qaction.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qkeysequence.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qicon.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qpalette.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qbrush.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qfont.h \
@@ -411,9 +418,6 @@ CMakeFiles/Synera_Starter.dir/Synera_Starter_autogen/mocs_compilation.cpp.obj: \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/qtabwidget.h \
  D:\PA\Synera_starter\build\Synera_Starter_autogen\MXUWEOXILK/moc_griditem.cpp \
  D:/PA/Synera_starter/src/gui/griditem.h \
- D:/Qt/6.11.0/mingw_64/include/QtWidgets/QGraphicsObject \
- D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgraphicsitem.h \
- D:/Qt/6.11.0/mingw_64/include/QtGui/qpainterpath.h \
  D:\PA\Synera_starter\build\Synera_Starter_autogen\MXUWEOXILK/moc_startwindow.cpp \
  D:/PA/Synera_starter/src/gui/startwindow.h \
  D:\PA\Synera_starter\build\Synera_Starter_autogen\MXUWEOXILK/moc_unititem.cpp \

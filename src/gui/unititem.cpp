@@ -1,5 +1,6 @@
 #include "gui/unititem.h"
 #include "entity/unit.h"
+#include "entity/equipment.h"
 #include <QCoreApplication>
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
@@ -128,6 +129,26 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
         painter->setFont(levelFont);
         painter->setPen(QColor(255, 215, 0));
         painter->drawText(QRectF(-32, 24, 64, 12), Qt::AlignCenter, levelText);
+        
+        // 如果有装备，显示在最后
+        if (m_unit->owner() == Unit::Owner::PlayerCtrl && m_unit->equipment()) {
+            QString eqName;
+            switch (m_unit->equipment()->type()) {
+                case Equipment::Type::Sword: eqName = QString::fromUtf8("剑"); break;
+                case Equipment::Type::Crystal: eqName = QString::fromUtf8("水晶"); break;
+                case Equipment::Type::armor: eqName = QString::fromUtf8("盔甲"); break;
+                case Equipment::Type::Gloves: eqName = QString::fromUtf8("手套"); break;
+                default: eqName = "Eq"; break;
+            }
+            QFont eqFont = painter->font();
+            eqFont.setPointSize(8);
+            painter->setFont(eqFont);
+            painter->setPen(Qt::white);
+            painter->setBrush(QColor(50, 50, 50, 180));
+            QRectF bgRect(-30, 38, 60, 16);
+            painter->drawRoundedRect(bgRect, 2, 2);
+            painter->drawText(bgRect, Qt::AlignCenter, QString::fromUtf8("装备: ") + eqName);
+        }
     }
 }
 

@@ -352,7 +352,9 @@ CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj: \
  D:\PA\Synera_starter\src\core\shop.h \
  D:/PA/Synera_starter/src/entity\unit.h \
  D:/PA/Synera_starter/src/entity/player.h \
+ D:/PA/Synera_starter/src/entity/equipment.h \
  D:\PA\Synera_starter\src\core\gamestate.h \
+ D:/PA/Synera_starter/src/entity/equipment.h \
  D:/PA/Synera_starter/src/gui/griditem.h \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/QGraphicsObject \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgraphicsitem.h \
@@ -392,6 +394,7 @@ CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj: \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qpixelformat.h \
  D:/PA/Synera_starter/src/gui/unititem.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/QPixmap \
+ D:/PA/Synera_starter/src/gui/equipmentslot.h \
  D:/PA/Synera_starter/src/core/gamestate.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/QFile \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qfile.h \
@@ -510,4 +513,15 @@ CMakeFiles/Synera_Starter.dir/src/core/game.cpp.obj: \
  D:/Qt/6.11.0/mingw_64/include/QtCore/QTimer \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qtimer.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/QPen \
- D:/Qt/6.11.0/mingw_64/include/QtCore/QtMath
+ D:/Qt/6.11.0/mingw_64/include/QtCore/QtMath \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/QRandomGenerator \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qrandom.h \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/random \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/random.h \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/opt_random.h \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/pmmintrin.h \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/emmintrin.h \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/xmmintrin.h \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/mmintrin.h \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/mwaitintrin.h \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/random.tcc

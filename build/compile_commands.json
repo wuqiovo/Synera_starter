@@ -31,6 +31,12 @@
 },
 {
   "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\entity\\equipment.cpp.obj -c D:\\PA\\Synera_starter\\src\\entity\\equipment.cpp",
+  "file": "D:/PA/Synera_starter/src/entity/equipment.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/entity/equipment.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
   "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\entity\\player.cpp.obj -c D:\\PA\\Synera_starter\\src\\entity\\player.cpp",
   "file": "D:/PA/Synera_starter/src/entity/player.cpp",
   "output": "CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj"
@@ -40,6 +46,12 @@
   "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\entity\\unit.cpp.obj -c D:\\PA\\Synera_starter\\src\\entity\\unit.cpp",
   "file": "D:/PA/Synera_starter/src/entity/unit.cpp",
   "output": "CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.obj"
+},
+{
+  "directory": "D:/PA/Synera_starter/build",
+  "command": "D:\\Qt\\Tools\\mingw1310_64\\bin\\g++.exe -DMINGW_HAS_SECURE_API=1 -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NEEDS_QMAIN -DQT_WIDGETS_LIB -DUNICODE -DWIN32 -DWIN64 -D_ENABLE_EXTENDED_ALIGNED_STORAGE -D_UNICODE -D_WIN64 @CMakeFiles/Synera_Starter.dir/includes_CXX.rsp -g -std=gnu++17 -o CMakeFiles\\Synera_Starter.dir\\src\\gui\\equipmentslot.cpp.obj -c D:\\PA\\Synera_starter\\src\\gui\\equipmentslot.cpp",
+  "file": "D:/PA/Synera_starter/src/gui/equipmentslot.cpp",
+  "output": "CMakeFiles/Synera_Starter.dir/src/gui/equipmentslot.cpp.obj"
 },
 {
   "directory": "D:/PA/Synera_starter/build",

@@ -36,7 +36,11 @@ public:
     explicit Unit(const QString& name = QString("Unit"), Trait trait = Trait::None, int hp = -1, int atk = -1);
     virtual ~Unit() = default;
 
+    static int getNextId() { return s_nextId; }
+    static void setNextId(int id) { s_nextId = id; }
+
     int id() const { return m_id; }
+    void setId(int id) { m_id = id; }
 
     QString name() const { return m_name; }
     QPoint position() const { return m_position; }
@@ -46,13 +50,13 @@ public:
 
     int hp() const { return m_hp; }
     void setHp(int hp) { m_hp = hp > 0 ? hp : 0; }
-    int maxHp() const { return m_maxHp + m_bonusMaxHp; }
+    int maxHp() const;
     void setMaxHp(int maxHp) { m_maxHp = maxHp; }
 
-    int atk() const { return m_atk + m_bonusAtk; }
+    int atk() const;
     void setAtk(int atk) { m_atk = atk; }
 
-    int range() const { return m_range + m_bonusRange; }
+    int range() const;
     void setRange(int range) { m_range = range; }
 
     void setBonusMaxHp(int bonus) { m_bonusMaxHp = bonus; }
@@ -62,7 +66,7 @@ public:
     int bonusAtk() const { return m_bonusAtk; }
     int bonusRange() const { return m_bonusRange; }
 
-    int maxMana() const { return m_maxMana; }
+    int maxMana() const;
     void setMaxMana(int maxMana) { m_maxMana = maxMana; }
 
     int mana() const { return m_mana; }
@@ -82,6 +86,11 @@ public:
 
     Unit* target() const { return m_target; }
     void setTarget(Unit* target) { m_target = target; }
+
+    class Equipment* equipment() const { return m_equipment; }
+    void setEquipment(class Equipment* eq);
+
+    bool canActThisTick() const;
 
     virtual void act(Game* game);
     virtual void upgrade();
@@ -132,6 +141,9 @@ private:
     float m_damageOutputReductionRatio;
     int m_vunerableTurns;
     float m_vunerableDamageIncreaseRatio;
+    
+    int m_actionPacingCounter;
+    class Equipment* m_equipment;
 };
 
 class Warrior : public Unit

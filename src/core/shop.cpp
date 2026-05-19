@@ -1,5 +1,6 @@
 #include "shop.h"
 #include "game.h"
+#include "entity/equipment.h"
 #include <QRandomGenerator>
 
 Shop::Shop(int size)
@@ -96,10 +97,26 @@ void Shop::buyUnit(int index, Game* game)
         if (matchingUnits.size() >= 3) {
             Unit::Trait t = matchingUnits[0]->trait();
             QString tname = matchingUnits[0]->name();
-            // 记录基础属性由于后续会被删除
-            int baseHp = matchingUnits[0]->maxHp();
-            int baseAtk = matchingUnits[0]->atk();
-            
+            // 记录纯基础属性（不含羁绊加成和装备加成），避免升星后羁绊被重复叠加。
+            int baseHp = matchingUnits[0]->maxHp() - matchingUnits[0]->bonusMaxHp()
+                         - (matchingUnits[0]->equipment() ? matchingUnits[0]->equipment()->bonusHp() : 0);
+            int baseAtk = matchingUnits[0]->atk() - matchingUnits[0]->bonusAtk()
+                          - (matchingUnits[0]->equipment() ? matchingUnits[0]->equipment()->bonusAtk() : 0);
+
+            // 保留首个遇到装备的单位的装备，其余装备释放避免泄露。
+            Equipment* preservedEq = nullptr;
+            for (int i = 0; i < 3; ++i) {
+                Equipment* eq = matchingUnits[i]->equipment();
+                if (!eq) continue;
+                if (!preservedEq) {
+                    preservedEq = eq;
+                } else {
+                    delete eq;
+                }
+                // 解除原单位对装备的引用，避免后续误用或重复释放。
+                matchingUnits[i]->setEquipment(nullptr);
+            }
+
             for (int i = 0; i < 3; ++i) {
                 game->removeUnitNow(matchingUnits[i]);
             }
@@ -116,6 +133,9 @@ void Shop::buyUnit(int index, Game* game)
             }
             star2->setOwner(Unit::Owner::PlayerCtrl);
             star2->upgrade(); // 变成2星并增加属性
+            if (preservedEq) {
+                star2->setEquipment(preservedEq);
+            }
             
             for (int i = game->bench()->capacity() - 1; i >= 0; --i) {
                 if (!game->bench()->hasUnitAt(i)) {

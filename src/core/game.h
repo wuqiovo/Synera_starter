@@ -60,6 +60,18 @@ public:
     void handleDragMoved(int unitId, const QPoint& sourceGrid, const QPointF& scenePos);
     void handleDropCommand(int unitId, const QPoint& sourceGrid, const QPointF& scenePos);
 
+    // 构建与更新装备栏 UI
+    void buildEquipmentUI();
+    void updateEquipmentUI();
+
+public slots:
+    // 装备交互槽函数
+    void handleEqDiscardClicked(int slotIndex);
+    void handleEqDragStarted(int slotIndex, QPointF scenePos);
+    void handleEqDragMoved(int slotIndex, QPointF scenePos);
+    void handleEqDragDropped(int slotIndex, QPointF scenePos);
+
+public:
     void requestRemoveUnit(Unit* unit);
     bool moveUnitDuringBattle(Unit* unit, const QPoint& target);
     bool isUnitOnBoard(const Unit* unit) const;
@@ -175,6 +187,16 @@ private:
     // 商店出售区域判定矩形(场景坐标)
     QRectF m_shopSellRect;
     QWidget* m_shopSellWidget = nullptr;
+
+    // 装备栏标题
+    QGraphicsSimpleTextItem* m_eqTitleLabel = nullptr;
+    // 装备栏图元 (5个格子)
+    std::vector<class EquipmentSlotItem*> m_eqSlotItems;
+
+    // 装备拖拽相关
+    bool m_dragEqActive;
+    int m_activeEqSlotIndex;
+    QGraphicsSimpleTextItem* m_dragEqIcon = nullptr;
 
     // 当前是否处于拖拽流程中。
     bool m_dragActive;

@@ -1,6 +1,6 @@
-CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.obj: \
- D:\PA\Synera_starter\src\gui\unititem.cpp \
- D:/PA/Synera_starter/src/gui/unititem.h \
+CMakeFiles/Synera_Starter.dir/src/gui/equipmentslot.cpp.obj: \
+ D:\PA\Synera_starter\src\gui\equipmentslot.cpp \
+ D:\PA\Synera_starter\src\gui\equipmentslot.h \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/QGraphicsObject \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgraphicsitem.h \
  D:/Qt/6.11.0/mingw_64/include/QtWidgets/qtwidgetsglobal.h \
@@ -372,22 +372,7 @@ CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.obj: \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qrgba64.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qimage.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qpixelformat.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/QPoint \
- D:/Qt/6.11.0/mingw_64/include/QtGui/QPixmap \
- D:/PA/Synera_starter/src/entity/unit.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/QString \
  D:/PA/Synera_starter/src/entity/equipment.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/QCoreApplication \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qcoreapplication.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qcoreevent.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qbasictimer.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qabstracteventdispatcher.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qeventloop.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qdeadlinetimer.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qnativeinterface.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qcoreapplication_platform.h \
- D:/Qt/6.11.0/mingw_64/include/QtWidgets/QGraphicsSceneMouseEvent \
- D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgraphicssceneevent.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/QPainter \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qpainter.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qtextoption.h \
@@ -398,42 +383,22 @@ CMakeFiles/Synera_Starter.dir/src/gui/unititem.cpp.obj: \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qendian.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qfontvariableaxis.h \
  D:/Qt/6.11.0/mingw_64/include/QtGui/qfontmetrics.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/QFileInfo \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qfileinfo.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qfile.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qfiledevice.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qiodevice.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/filesystem \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/fs_fwd.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/fs_path.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/locale \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/locale_facets.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/cwctype \
- D:/Qt/Tools/mingw1310_64/x86_64-w64-mingw32/include/wctype.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/ctype_base.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/ctype_inline.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/locale_facets.tcc \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/locale_facets_nonio.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/time_members.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/x86_64-w64-mingw32/bits/messages_members.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/codecvt.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/locale_facets_nonio.tcc \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/locale_conv.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/iomanip \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/quoted_string.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/sstream \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/istream \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ios \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_ios.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/basic_ios.tcc \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/ostream \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/ostream.tcc \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/istream.tcc \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/sstream.tcc \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/codecvt \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/fs_dir.h \
- D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/fs_ops.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qdatetime.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qcalendar.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/QGraphicsSceneMouseEvent \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qgraphicssceneevent.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qcoreevent.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qbasictimer.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qabstracteventdispatcher.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qeventloop.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qdeadlinetimer.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/QCursor \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qcursor.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qbitmap.h \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/QApplication \
+ D:/Qt/6.11.0/mingw_64/include/QtWidgets/qapplication.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qcoreapplication.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qnativeinterface.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qcoreapplication_platform.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qguiapplication.h \
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qinputmethod.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qlocale.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qtimezone.h
+ D:/Qt/6.11.0/mingw_64/include/QtGui/qguiapplication_platform.h

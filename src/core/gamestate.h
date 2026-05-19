@@ -5,6 +5,7 @@
 #include <QString>
 #include <QVector>
 #include "entity/unit.h"
+#include "entity/equipment.h"
 
 // 单位存档
 struct UnitState
@@ -35,6 +36,8 @@ struct UnitState
     Unit::Trait trait = Unit::Trait::None;
     // 星级/等级
     int level = 1;
+    // 单位佩戴装备的类型，None 表示无装备。
+    Equipment::Type equipmentType = Equipment::Type::None;
 };
 
 // 玩家存档
@@ -54,6 +57,8 @@ struct PlayerState
     int round = 1;
     // 玩家名称。
     QString name;
+    // 装备栏中每格的装备类型，None 表示空格。
+    QVector<Equipment::Type> inventoryTypes;
 };
 
 // 全局游戏存档
@@ -72,6 +77,9 @@ struct GameState
     QVector<UnitState> units;
     // 备战区槽位映射：index -> units 下标，-1 表示空槽。
     QVector<int> benchUnitIndices;
+    
+    // 全局单位 ID 计数器。
+    int nextUnitId = 0;
 };
 
 #endif // GAMESTATE_H

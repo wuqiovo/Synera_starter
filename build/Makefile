@@ -274,6 +274,30 @@ src/core/shop.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/core/shop.cpp.s
 .PHONY : src/core/shop.cpp.s
 
+src/entity/equipment.obj: src/entity/equipment.cpp.obj
+.PHONY : src/entity/equipment.obj
+
+# target to build an object file
+src/entity/equipment.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/entity/equipment.cpp.obj
+.PHONY : src/entity/equipment.cpp.obj
+
+src/entity/equipment.i: src/entity/equipment.cpp.i
+.PHONY : src/entity/equipment.i
+
+# target to preprocess a source file
+src/entity/equipment.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/entity/equipment.cpp.i
+.PHONY : src/entity/equipment.cpp.i
+
+src/entity/equipment.s: src/entity/equipment.cpp.s
+.PHONY : src/entity/equipment.s
+
+# target to generate assembly for a file
+src/entity/equipment.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/entity/equipment.cpp.s
+.PHONY : src/entity/equipment.cpp.s
+
 src/entity/player.obj: src/entity/player.cpp.obj
 .PHONY : src/entity/player.obj
 
@@ -321,6 +345,30 @@ src/entity/unit.s: src/entity/unit.cpp.s
 src/entity/unit.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/entity/unit.cpp.s
 .PHONY : src/entity/unit.cpp.s
+
+src/gui/equipmentslot.obj: src/gui/equipmentslot.cpp.obj
+.PHONY : src/gui/equipmentslot.obj
+
+# target to build an object file
+src/gui/equipmentslot.cpp.obj:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/gui/equipmentslot.cpp.obj
+.PHONY : src/gui/equipmentslot.cpp.obj
+
+src/gui/equipmentslot.i: src/gui/equipmentslot.cpp.i
+.PHONY : src/gui/equipmentslot.i
+
+# target to preprocess a source file
+src/gui/equipmentslot.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/gui/equipmentslot.cpp.i
+.PHONY : src/gui/equipmentslot.cpp.i
+
+src/gui/equipmentslot.s: src/gui/equipmentslot.cpp.s
+.PHONY : src/gui/equipmentslot.s
+
+# target to generate assembly for a file
+src/gui/equipmentslot.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles\Synera_Starter.dir\build.make CMakeFiles/Synera_Starter.dir/src/gui/equipmentslot.cpp.s
+.PHONY : src/gui/equipmentslot.cpp.s
 
 src/gui/gamewindow.obj: src/gui/gamewindow.cpp.obj
 .PHONY : src/gui/gamewindow.obj
@@ -468,12 +516,18 @@ help:
 	@echo ... src/core/shop.obj
 	@echo ... src/core/shop.i
 	@echo ... src/core/shop.s
+	@echo ... src/entity/equipment.obj
+	@echo ... src/entity/equipment.i
+	@echo ... src/entity/equipment.s
 	@echo ... src/entity/player.obj
 	@echo ... src/entity/player.i
 	@echo ... src/entity/player.s
 	@echo ... src/entity/unit.obj
 	@echo ... src/entity/unit.i
 	@echo ... src/entity/unit.s
+	@echo ... src/gui/equipmentslot.obj
+	@echo ... src/gui/equipmentslot.i
+	@echo ... src/gui/equipmentslot.s
 	@echo ... src/gui/gamewindow.obj
 	@echo ... src/gui/gamewindow.i
 	@echo ... src/gui/gamewindow.s

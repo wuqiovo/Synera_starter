@@ -281,4 +281,17 @@ CMakeFiles/Synera_Starter.dir/src/entity/player.cpp.obj: \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qstringtokenizer.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qstringbuilder.h \
  D:/Qt/6.11.0/mingw_64/include/QtCore/qstringconverter.h \
- D:/Qt/6.11.0/mingw_64/include/QtCore/qstringconverter_base.h
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qstringconverter_base.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/QList \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qlist.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qhashfunctions.h \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/numeric \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/bits/stl_numeric.h \
+ D:/Qt/Tools/mingw1310_64/lib/gcc/x86_64-w64-mingw32/13.1.0/include/c++/pstl/glue_numeric_defs.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qiterator.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qbytearraylist.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qstringlist.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qalgorithms.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/q20bit.h \
+ D:/Qt/6.11.0/mingw_64/include/QtCore/qstringmatcher.h \
+ D:\PA\Synera_starter\src\entity\equipment.h
