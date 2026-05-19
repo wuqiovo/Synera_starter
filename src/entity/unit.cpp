@@ -30,7 +30,6 @@ Unit::Unit(const QString& name, Trait trait, int hp, int atk)
     , m_stunTurns(0)
     , m_damageOutputReductionTurns(0)
     , m_damageOutputReductionRatio(0.0f)
-    , m_actionPacingCounter(0)
     , m_equipment(nullptr)
 {
     if (hp >= 0) {
@@ -59,28 +58,8 @@ int Unit::maxMana() const {
     return m > 0 ? m : 1; 
 }
 
-bool Unit::canActThisTick() const
-{
-    bool hasGloves = (m_equipment && m_equipment->type() == Equipment::Type::Gloves);
-    if (!hasGloves) {
-        if (m_actionPacingCounter + 1 < 2) {
-            return false;
-        }
-    }
-    return true;
-}
-
 void Unit::act(Game* game)
 {
-    bool hasGloves = (m_equipment && m_equipment->type() == Equipment::Type::Gloves);
-    if (!hasGloves) {
-        m_actionPacingCounter++;
-        if (m_actionPacingCounter < 2) {
-            return; // 跳过本次行动滴答
-        }
-        m_actionPacingCounter = 0;
-    }
-
     if (!prepareForAct(game)) {
         return;
     }
@@ -128,10 +107,10 @@ void Unit::act(Game* game)
 
 void Unit::upgrade()
 {
-    // 默认升级行为
+    // 默认升级行为：属性提升 1.6 倍，下取整
     ++m_level;
-    m_maxHp *= 2;
-    m_atk *= 2;
+    m_maxHp = static_cast<int>(m_maxHp * 1.6);
+    m_atk   = static_cast<int>(m_atk   * 1.6);
     m_hp = maxHp(); // 升级后恢复 HP（含装备加成）
     // 升级后确保 mana 不超过 maxMana（装备可能降低 maxMana）。
     if (m_mana > maxMana()) {
@@ -348,8 +327,8 @@ void Unit::attackTarget(Unit* target)
     int damage = adjustDamageOutput(atk());
     target->takeDamage(damage);
     m_mana += 10; // 攻击后回复法力
-    if (m_mana > m_maxMana) {
-        m_mana = m_maxMana;
+    if (m_mana > maxMana()) {
+        m_mana = maxMana();
     }
 }
 
@@ -381,7 +360,7 @@ bool Unit::prepareForAct(Game* game)
         return false;
     }
 
-    if (m_status == Status::Casting && m_mana < m_maxMana) {
+    if (m_status == Status::Casting && m_mana < maxMana()) {
         setStatus(Status::Idle);
     }
     
@@ -415,14 +394,14 @@ void Unit::normalIdleBehavior(Game* game)
     }
     // 默认空闲行为：寻找目标并切换状态
     m_mana += 10; // 空闲状态回复法力
-    if (m_mana > m_maxMana) {
-        m_mana = m_maxMana;
+    if (m_mana > maxMana()) {
+        m_mana = maxMana();
     }
     
     if (m_target && distanceTo(m_target) > range()) {
         setStatus(Status::Moving);
     }
-    else if (m_target && m_mana == m_maxMana) {
+    else if (m_target && m_mana >= maxMana()) {
         setStatus(Status::Casting);
     }
     else if (m_target) {
@@ -440,7 +419,7 @@ void Unit::normalMoveBehavior(Game* game)
     if (distanceTo(m_target) > range()) {
         moveTowardsTarget(game, m_target);
     } 
-    else if (m_target && m_mana == m_maxMana) {
+    else if (m_target && m_mana >= maxMana()) {
         setStatus(Status::Casting);
     }
     else {
@@ -457,7 +436,7 @@ void Unit::resolveAttack(Game* game)
         m_target = nullptr;
         setStatus(Status::Idle);
     }
-    else if (m_target && m_mana == m_maxMana) {
+    else if (m_target && m_mana >= maxMana()) {
         setStatus(Status::Casting);
     }
 }
@@ -506,7 +485,7 @@ void Unit::setEquipment(Equipment* eq)
         }
         // 水晶等装备会降低 maxMana，需要确保 mana 不超过新的上限。
         int newMaxMana = maxMana();
-        if (m_mana != newMaxMana) {
+        if (m_mana > newMaxMana) {
             m_mana = newMaxMana;
         }
     }
@@ -639,7 +618,7 @@ void Boss::skill(Game* game)
         return;
     }
 
-    setAtk(atk() + 5);
+    setAtk(atk() + 10);
     m_target->setVunerableTurns(2);
     m_target->setVunerableDamageIncreaseRatio(0.3f);
 }

@@ -53,7 +53,11 @@ template <> constexpr inline auto Game::qt_create_metaobjectdata<qt_meta_tag_ZN4
         "QPointF",
         "scenePos",
         "handleEqDragMoved",
-        "handleEqDragDropped"
+        "handleEqDragDropped",
+        "handleUnitEqDragStarted",
+        "unitId",
+        "handleUnitEqDragMoved",
+        "handleUnitEqDragDropped"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -86,6 +90,18 @@ template <> constexpr inline auto Game::qt_create_metaobjectdata<qt_meta_tag_ZN4
         // Slot 'handleEqDragDropped'
         QtMocHelpers::SlotData<void(int, QPointF)>(15, 2, QMC::AccessPublic, QMetaType::Void, {{
             { QMetaType::Int, 10 }, { 0x80000000 | 12, 13 },
+        }}),
+        // Slot 'handleUnitEqDragStarted'
+        QtMocHelpers::SlotData<void(int, QPointF)>(16, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 17 }, { 0x80000000 | 12, 13 },
+        }}),
+        // Slot 'handleUnitEqDragMoved'
+        QtMocHelpers::SlotData<void(int, QPointF)>(18, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 17 }, { 0x80000000 | 12, 13 },
+        }}),
+        // Slot 'handleUnitEqDragDropped'
+        QtMocHelpers::SlotData<void(int, QPointF)>(19, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 17 }, { 0x80000000 | 12, 13 },
         }}),
     };
     QtMocHelpers::UintData qt_properties {
@@ -120,6 +136,9 @@ void Game::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, void *
         case 7: _t->handleEqDragStarted((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
         case 8: _t->handleEqDragMoved((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
         case 9: _t->handleEqDragDropped((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
+        case 10: _t->handleUnitEqDragStarted((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
+        case 11: _t->handleUnitEqDragMoved((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
+        case 12: _t->handleUnitEqDragDropped((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
         default: ;
         }
     }
@@ -158,14 +177,14 @@ int Game::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 10)
+        if (_id < 13)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 10;
+        _id -= 13;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 10)
+        if (_id < 13)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 10;
+        _id -= 13;
     }
     return _id;
 }

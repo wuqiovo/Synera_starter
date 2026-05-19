@@ -48,8 +48,13 @@ public:
     QString getPlayerName() const { return player_name; }
     void setPlayerName(const QString& name) { player_name = name; }
 
-    Equipment* inventory(int index) const { return (index >= 0 && index < 5) ? m_inventory[index] : nullptr; }
-    void setInventory(int index, Equipment* eq) { if (index >= 0 && index < 5) m_inventory[index] = eq; }
+    Equipment* inventory(int index) const { 
+        return (index >= 0 && index < 5) ? m_inventory[index] : nullptr; 
+    }
+    void setInventory(int index, Equipment* eq) { 
+        if (index >= 0 && index < 5) 
+            m_inventory[index] = eq; 
+    }
     bool addInventory(Equipment* eq) {
         for(int i = 0; i < 5; ++i) {
             if (!m_inventory[i]) {
@@ -74,7 +79,7 @@ private:
     int populationCap; // 人口上限(默认6)
     int curStage; // 当前关卡(初始1)
     QString player_name; // 玩家姓名
-    Equipment* m_inventory[5];
+    Equipment* m_inventory[5]; // 玩家装备栏（储存装备指针）
 };
 
 #endif // PLAYER_H

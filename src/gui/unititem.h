@@ -32,6 +32,10 @@ signals:
     void dragStarted(int unitId, const QPoint& sourceGrid, const QPointF& scenePos);
     void dragMoved(int unitId, const QPoint& sourceGrid, const QPointF& scenePos);
     void dragDropped(int unitId, const QPoint& sourceGrid, const QPointF& scenePos);
+    // 单位装备拖拽信号
+    void eqDragStarted(int unitId, const QPointF& scenePos);
+    void eqDragMoved(int unitId, const QPointF& scenePos);
+    void eqDragDropped(int unitId, const QPointF& scenePos);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
@@ -48,6 +52,10 @@ private:
     int m_benchSlot;
     bool m_dragging;
     bool m_active;
+    // 是否正在拖拽单位身上的装备。
+    bool m_eqDragging;
+    // 装备标签在图元坐标系中的点击热区。
+    QRectF m_eqRect;
     // 缓存单位图像，避免重复加载。mutable 以允许在 const 方法中加载。
     mutable QPixmap m_sprite;
     mutable bool m_spriteTried;

@@ -10,6 +10,7 @@ EquipmentSlotItem::EquipmentSlotItem(int slotIndex, QGraphicsItem* parent)
     , m_slotIndex(slotIndex)
     , m_eq(nullptr)
     , m_dragging(false)
+    , m_active(false)
 {
     setAcceptedMouseButtons(Qt::LeftButton);
     m_discardRect = QRectF(65, 5, 20, 20); // 丢弃按钮矩形
@@ -18,6 +19,13 @@ EquipmentSlotItem::EquipmentSlotItem(int slotIndex, QGraphicsItem* parent)
 QRectF EquipmentSlotItem::boundingRect() const
 {
     return QRectF(0, 0, 90, 110);
+}
+
+void EquipmentSlotItem::setActive(bool active)
+{
+    if (m_active == active) return;
+    m_active = active;
+    update();
 }
 
 void EquipmentSlotItem::setEquipment(Equipment* eq)
@@ -35,7 +43,7 @@ void EquipmentSlotItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*
 
     // 背景
     painter->setBrush(QColor(60, 60, 80, 200));
-    painter->setPen(QPen(QColor(90, 90, 122), 2));
+    painter->setPen(m_active ? QPen(QColor(100, 200, 150), 3) : QPen(QColor(90, 90, 122), 2));
     painter->drawRoundedRect(0, 0, 90, 110, 5, 5);
 
     if (m_eq) {

@@ -54,11 +54,11 @@ void Shop::buyUnit(int index, Game* game)
     
     Unit* newUnit = nullptr;
     if (info->trait == Unit::Trait::Warrior) {
-        newUnit = new Warrior(info->name, info->hp, info->atk);
+        newUnit = new Warrior(info->name);
     } else if (info->trait == Unit::Trait::Mage) {
-        newUnit = new Mage(info->name, info->hp, info->atk);
+        newUnit = new Mage(info->name);
     } else if (info->trait == Unit::Trait::Archer) {
-        newUnit = new Archer(info->name, info->hp, info->atk);
+        newUnit = new Archer(info->name);
     } else {
         newUnit = new Unit(info->name, info->trait, info->hp, info->atk);
     }
@@ -97,11 +97,6 @@ void Shop::buyUnit(int index, Game* game)
         if (matchingUnits.size() >= 3) {
             Unit::Trait t = matchingUnits[0]->trait();
             QString tname = matchingUnits[0]->name();
-            // 记录纯基础属性（不含羁绊加成和装备加成），避免升星后羁绊被重复叠加。
-            int baseHp = matchingUnits[0]->maxHp() - matchingUnits[0]->bonusMaxHp()
-                         - (matchingUnits[0]->equipment() ? matchingUnits[0]->equipment()->bonusHp() : 0);
-            int baseAtk = matchingUnits[0]->atk() - matchingUnits[0]->bonusAtk()
-                          - (matchingUnits[0]->equipment() ? matchingUnits[0]->equipment()->bonusAtk() : 0);
 
             // 保留首个遇到装备的单位的装备，其余装备释放避免泄露。
             Equipment* preservedEq = nullptr;
@@ -123,13 +118,13 @@ void Shop::buyUnit(int index, Game* game)
             
             Unit* star2 = nullptr;
             if (t == Unit::Trait::Warrior) {
-                star2 = new Warrior(tname, baseHp, baseAtk);
+                star2 = new Warrior(tname);
             } else if (t == Unit::Trait::Mage) {
-                star2 = new Mage(tname, baseHp, baseAtk);
+                star2 = new Mage(tname);
             } else if (t == Unit::Trait::Archer) {
-                star2 = new Archer(tname, baseHp, baseAtk);
+                star2 = new Archer(tname);
             } else {
-                star2 = new Unit(tname, t, baseHp, baseAtk);
+                star2 = new Unit(tname, t, 0, 0);
             }
             star2->setOwner(Unit::Owner::PlayerCtrl);
             star2->upgrade(); // 变成2星并增加属性

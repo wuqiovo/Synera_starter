@@ -12,7 +12,9 @@ UnitItem::UnitItem(Unit* unit, QGraphicsItem* parent)
     , m_gridPos(-1, -1)
     , m_benchSlot(-1)
     , m_dragging(false)
+    , m_eqDragging(false)
     , m_active(false)
+    , m_eqRect(-24, 24, 48, 14)
     , m_spriteTried(false)
 {
     setAcceptedMouseButtons(Qt::LeftButton);
@@ -20,7 +22,7 @@ UnitItem::UnitItem(Unit* unit, QGraphicsItem* parent)
 
 QRectF UnitItem::boundingRect() const
 {
-    return QRectF(-45, -62, 90, 112);
+    return QRectF(-45, -62, 90, 106);
 }
 
 void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
@@ -128,9 +130,9 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
         levelFont.setBold(true);
         painter->setFont(levelFont);
         painter->setPen(QColor(255, 215, 0));
-        painter->drawText(QRectF(-32, 24, 64, 12), Qt::AlignCenter, levelText);
+        painter->drawText(QRectF(-32, 14, 64, 12), Qt::AlignCenter, levelText);
         
-        // 如果有装备，显示在最后
+        // 如果有装备，显示在等级下方
         if (m_unit->owner() == Unit::Owner::PlayerCtrl && m_unit->equipment()) {
             QString eqName;
             switch (m_unit->equipment()->type()) {
@@ -141,11 +143,11 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
                 default: eqName = "Eq"; break;
             }
             QFont eqFont = painter->font();
-            eqFont.setPointSize(8);
+            eqFont.setPointSize(7);
             painter->setFont(eqFont);
             painter->setPen(Qt::white);
             painter->setBrush(QColor(50, 50, 50, 180));
-            QRectF bgRect(-30, 38, 60, 16);
+            QRectF bgRect(-24, 24, 48, 14);
             painter->drawRoundedRect(bgRect, 2, 2);
             painter->drawText(bgRect, Qt::AlignCenter, QString::fromUtf8("装备: ") + eqName);
         }
@@ -194,6 +196,15 @@ void UnitItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
         return;
     }
 
+    // 如果点击位置在装备标签热区内，且单位有装备且属于玩家，则启动装备拖拽。
+    if (m_unit && m_unit->owner() == Unit::Owner::PlayerCtrl
+        && m_unit->equipment() && m_eqRect.contains(event->pos())) {
+        m_eqDragging = true;
+        emit eqDragStarted(unitId(), event->scenePos());
+        event->accept();
+        return;
+    }
+
     m_dragging = true;
     emit dragStarted(unitId(), m_gridPos, event->scenePos());
     event->accept();
@@ -201,6 +212,12 @@ void UnitItem::mousePressEvent(QGraphicsSceneMouseEvent* event)
 
 void UnitItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (m_eqDragging) {
+        emit eqDragMoved(unitId(), event->scenePos());
+        event->accept();
+        return;
+    }
+
     if (!m_dragging) {
         QGraphicsObject::mouseMoveEvent(event);
         return;
@@ -212,6 +229,13 @@ void UnitItem::mouseMoveEvent(QGraphicsSceneMouseEvent* event)
 
 void UnitItem::mouseReleaseEvent(QGraphicsSceneMouseEvent* event)
 {
+    if (m_eqDragging && event->button() == Qt::LeftButton) {
+        m_eqDragging = false;
+        emit eqDragDropped(unitId(), event->scenePos());
+        event->accept();
+        return;
+    }
+
     if (!m_dragging || event->button() != Qt::LeftButton) {
         QGraphicsObject::mouseReleaseEvent(event);
         return;

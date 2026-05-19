@@ -16,27 +16,20 @@ struct UnitState
     QString name;
     // 单位位置（棋盘坐标，备战区为 (-1, -1)）。
     QPoint position;
-    // 当前生命值。
+
+    // 单位属性
     int hp = 0;
-    // 最大生命值。
     int maxHp = 0;
-    // 攻击力。
     int atk = 0;
-    // 攻击距离。
     int range = 0;
-    // 最大法力值。
     int maxMana = 0;
-    // 当前法力值。
     int mana = 0;
-    // 控制归属。
+
     Unit::Owner owner = Unit::Owner::PlayerCtrl;
-    // 当前状态。
     Unit::Status status = Unit::Status::Idle;
-    // 羁绊类型。
     Unit::Trait trait = Unit::Trait::None;
-    // 星级/等级
     int level = 1;
-    // 单位佩戴装备的类型，None 表示无装备。
+
     Equipment::Type equipmentType = Equipment::Type::None;
 };
 

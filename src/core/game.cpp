@@ -49,7 +49,7 @@ Game::Game(QObject* parent)
     , m_enemyUnitCount(0)
     , m_inBattle(false)
     , m_battleTimer(new QTimer(this))
-    , m_battleTickMs(120)
+    , m_battleTickMs(300)
     , m_activeActionUnitId(-1)
     , m_battleTurnIndex(0)
     , m_dragEqActive(false)
@@ -92,10 +92,15 @@ void Game::reset()
     m_inBattle = false;
     updateShopUI();
     m_player.setHp(100);
-    m_player.setGold(100);
+    m_player.setGold(0);
     m_player.setLevel(1);
     m_player.setPopulationCap(6);
     m_player.setCurStage(m_stage);
+
+    // 清空装备栏
+    for (int i = 0; i < 5; ++i) {
+        m_player.removeInventory(i);
+    }
 
     // 新 stage 初始化：清空所有历史单位后重新生成初始玩家单位。
     clearAllUnits();
@@ -857,9 +862,9 @@ void Game::createStarterUnitsIfNeeded()
         return;
     }
 
-    Unit* player1 = new Warrior("战士", 150, 10);
-    Unit* player2 = new Archer("弓手", 100, 10);
-    Unit* player3 = new Mage("法师", 80, 15);
+    Unit* player1 = new Warrior();
+    Unit* player2 = new Archer();
+    Unit* player3 = new Mage();
 
     m_units.append(player1);
     m_units.append(player2);
@@ -911,6 +916,12 @@ void Game::restorePlayerUnits()
                 this, &Game::handleDragMoved);
         connect(unitItem, &UnitItem::dragDropped,
                 this, &Game::handleDropCommand);
+        connect(unitItem, &UnitItem::eqDragStarted,
+                this, &Game::handleUnitEqDragStarted);
+        connect(unitItem, &UnitItem::eqDragMoved,
+                this, &Game::handleUnitEqDragMoved);
+        connect(unitItem, &UnitItem::eqDragDropped,
+                this, &Game::handleUnitEqDragDropped);
     };
 
     // 重建所有原来在棋盘上的玩家单位
@@ -985,6 +996,12 @@ void Game::spawnEnemiesForCurrentRound()
                 this, &Game::handleDragMoved);
         connect(unitItem, &UnitItem::dragDropped,
                 this, &Game::handleDropCommand);
+        connect(unitItem, &UnitItem::eqDragStarted,
+                this, &Game::handleUnitEqDragStarted);
+        connect(unitItem, &UnitItem::eqDragMoved,
+                this, &Game::handleUnitEqDragMoved);
+        connect(unitItem, &UnitItem::eqDragDropped,
+                this, &Game::handleUnitEqDragDropped);
     };
 
     // 常规敌人数量，随回合数增加（第一回合2个，最多5个）
@@ -1012,18 +1029,18 @@ void Game::spawnEnemiesForCurrentRound()
 
         if (isBoss) {
             // 后续替换为独立的 Boss 类，目前使用基础 Unit 占位
-            newEnemy = new Boss(QString::fromUtf8("最终Boss(占位)"), 200 * multiplier, 20 * multiplier);
+            newEnemy = new Boss(QString::fromUtf8("最终Boss"), 200 * multiplier, 30 * multiplier);
 
             prefArr = bossPositions;
             prefCount = 5;
         } else {
             // 增量顺序：0:战士, 1:弓手, 2:法师, 3:战士, 4:弓手
             if (i == 0 || i == 3) {
-                newEnemy = new Warrior(QString::fromUtf8("敌方战士"), 150 * multiplier, 10 * multiplier);
+                newEnemy = new Warrior(QString::fromUtf8("敌方战士"), 150 * multiplier, 15 * multiplier);
             } else if (i == 1 || i == 4) {
-                newEnemy = new Archer(QString::fromUtf8("敌方弓手"), 100 * multiplier, 10 * multiplier);
+                newEnemy = new Archer(QString::fromUtf8("敌方弓手"), 100 * multiplier, 15 * multiplier);
             } else if (i == 2) {
-                newEnemy = new Mage(QString::fromUtf8("敌方法师"), 80 * multiplier, 15 * multiplier);
+                newEnemy = new Mage(QString::fromUtf8("敌方法师"), 80 * multiplier, 23 * multiplier);
             }
 
             if (i < 5) {
@@ -1372,6 +1389,12 @@ void Game::buildScene()
                 this, &Game::handleDragMoved);
         connect(unitItem, &UnitItem::dragDropped,
                 this, &Game::handleDropCommand);
+        connect(unitItem, &UnitItem::eqDragStarted,
+                this, &Game::handleUnitEqDragStarted);
+        connect(unitItem, &UnitItem::eqDragMoved,
+                this, &Game::handleUnitEqDragMoved);
+        connect(unitItem, &UnitItem::eqDragDropped,
+                this, &Game::handleUnitEqDragDropped);
     }
     
     buildShopUI();
@@ -1632,10 +1655,14 @@ void Game::buildEquipmentUI()
         m_scene->addItem(slot);
         m_eqSlotItems.push_back(slot);
 
-        connect(slot, &EquipmentSlotItem::discardClicked, this, &Game::handleEqDiscardClicked);
-        connect(slot, &EquipmentSlotItem::dragStarted, this, &Game::handleEqDragStarted);
-        connect(slot, &EquipmentSlotItem::dragMoved, this, &Game::handleEqDragMoved);
-        connect(slot, &EquipmentSlotItem::dragDropped, this, &Game::handleEqDragDropped);
+        connect(slot, &EquipmentSlotItem::discardClicked, 
+            this, &Game::handleEqDiscardClicked);
+        connect(slot, &EquipmentSlotItem::dragStarted, 
+            this, &Game::handleEqDragStarted);
+        connect(slot, &EquipmentSlotItem::dragMoved, 
+            this, &Game::handleEqDragMoved);
+        connect(slot, &EquipmentSlotItem::dragDropped, 
+            this, &Game::handleEqDragDropped);
     }
 
     updateEquipmentUI();
@@ -1732,6 +1759,145 @@ void Game::handleEqDragDropped(int slotIndex, QPointF scenePos)
         m_player.setInventory(slotIndex, oldEq);
         
         updateEquipmentUI();
+        targetItem->update();
+        emit playerInfoChanged();
+    }
+}
+
+void Game::handleUnitEqDragStarted(int unitId, QPointF scenePos)
+{
+    Unit* unit = findUnitById(unitId);
+    if (!unit || !unit->equipment()) return;
+
+    m_dragEqActive = true;
+    m_activeEqSlotIndex = -1; // -1 表示拖拽源是单位而非装备栏
+
+    if (!m_dragEqIcon) {
+        m_dragEqIcon = new QGraphicsSimpleTextItem(QString::fromUtf8("📦"));
+        QFont f = m_dragEqIcon->font();
+        f.setPointSize(18);
+        m_dragEqIcon->setFont(f);
+        m_dragEqIcon->setBrush(QColor(255, 200, 100));
+        m_scene->addItem(m_dragEqIcon);
+    }
+
+    m_dragEqIcon->setPos(scenePos);
+    m_dragEqIcon->setZValue(kZDraggingUnit + 1.0);
+    m_dragEqIcon->show();
+}
+
+void Game::handleUnitEqDragMoved(int unitId, QPointF scenePos)
+{
+    if (!m_dragEqActive) return;
+
+    if (m_dragEqIcon) {
+        m_dragEqIcon->setPos(scenePos - QPointF(12, 12));
+    }
+
+    // 高亮有空位的装备栏槽位
+    for (int i = 0; i < 5; ++i) {
+        if (m_eqSlotItems[i]) {
+            m_eqSlotItems[i]->setActive(m_player.inventory(i) == nullptr);
+        }
+    }
+
+    // 高亮鼠标下方的玩家单位（作为装备互换目标）
+    int targetUnitId = -1;
+    for (auto item : m_unitItems) {
+        if (!item || !item->unit()) continue;
+        if (item->unit()->owner() != Unit::Owner::PlayerCtrl) continue;
+        if (item->unit()->id() == unitId) continue;
+        if (item->boundingRect().translated(item->pos()).contains(scenePos)) {
+            targetUnitId = item->unit()->id();
+            break;
+        }
+    }
+
+    for (auto item : m_unitItems) {
+        if (item && item->unit()) {
+            item->setActive(item->unit()->id() == targetUnitId);
+        }
+    }
+}
+
+void Game::handleUnitEqDragDropped(int unitId, QPointF scenePos)
+{
+    if (!m_dragEqActive) return;
+
+    m_dragEqActive = false;
+    m_activeEqSlotIndex = -1;
+
+    if (m_dragEqIcon) {
+        m_dragEqIcon->hide();
+    }
+
+    // 清除装备栏高亮
+    for (int i = 0; i < 5; ++i) {
+        if (m_eqSlotItems[i]) {
+            m_eqSlotItems[i]->setActive(false);
+        }
+    }
+
+    // 清除单位高亮
+    for (auto item : m_unitItems) {
+        if (item) item->setActive(false);
+    }
+
+    Unit* srcUnit = findUnitById(unitId);
+    if (!srcUnit || !srcUnit->equipment()) return;
+
+    // 1. 判断是否落在某个装备栏槽位上
+    int targetSlot = -1;
+    for (int i = 0; i < 5; ++i) {
+        if (m_eqSlotItems[i] && m_eqSlotItems[i]->contains(m_eqSlotItems[i]->mapFromScene(scenePos))) {
+            targetSlot = i;
+            break;
+        }
+    }
+
+    if (targetSlot >= 0 && !m_player.inventory(targetSlot)) {
+        // 装备栏该槽位为空，可以放入
+        Equipment* eq = srcUnit->equipment();
+        srcUnit->setEquipment(nullptr);
+        m_player.setInventory(targetSlot, eq);
+
+        updateEquipmentUI();
+        // 刷新单位图元显示（移除装备标签）
+        UnitItem* item = findUnitItem(unitId);
+        if (item) item->update();
+        emit playerInfoChanged();
+        return;
+    }
+
+    // 2. 判断是否落在另一个玩家单位上（装备互换）
+    UnitItem* targetItem = nullptr;
+    for (auto item : m_unitItems) {
+        if (item->boundingRect().translated(item->pos()).contains(scenePos)) {
+            if (item->unit() && item->unit()->owner() == Unit::Owner::PlayerCtrl
+                && item->unit()->id() != unitId) {
+                targetItem = item;
+                break;
+            }
+        }
+    }
+
+    if (targetItem) {
+        Unit* dstUnit = targetItem->unit();
+        Equipment* srcEq = srcUnit->equipment();
+        Equipment* dstEq = dstUnit->equipment();
+
+        // 源单位装上目标单位的装备（可能为 nullptr）
+        // 先设 nullptr 再装，避免 setEquipment 内部卸装逻辑误操作
+        srcUnit->setEquipment(nullptr);
+        if (dstEq) dstUnit->setEquipment(nullptr);
+
+        srcUnit->setEquipment(dstEq);
+        dstUnit->setEquipment(srcEq);
+
+        updateEquipmentUI();
+        // 刷新两个单位的图元显示
+        UnitItem* srcItem = findUnitItem(unitId);
+        if (srcItem) srcItem->update();
         targetItem->update();
         emit playerInfoChanged();
     }
@@ -1878,9 +2044,9 @@ void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
     const int damage = 10 * remainingUnits;
     
     if (winner == Unit::Owner::PlayerCtrl) {
-        m_player.setGold(m_player.Gold() + 6);
+        m_player.setGold(m_player.Gold() + 8);
     } else {
-        m_player.setGold(m_player.Gold() + 3);
+        m_player.setGold(m_player.Gold() + 5);
     }
 
     if (damage <= 0) {
@@ -1944,17 +2110,57 @@ void Game::battleTick()
 {
     if (!m_inBattle) {
         stopBattleLoop();
+        m_glovesExtraActPending = false;
+        m_glovesExtraActUnitId = -1;
         return;
     }
 
-    Unit* unit = nextActingUnit();
-    if (unit) {
-        if (unit->canActThisTick()) {
-            setActiveUnitItem(unit->id());
-        } else {
-            setActiveUnitItem(-1);
+    // 如果是手套单位的第二次行动
+    bool isGlovesExtraAct = m_glovesExtraActPending;
+    Unit* unit = nullptr;
+
+    if (isGlovesExtraAct) {
+        unit = findUnitById(m_glovesExtraActUnitId);
+        // 如果单位已死亡或离场，取消第二次行动，回退为普通 tick 流程
+        if (!unit || !isUnitOnBoard(unit) || unit->status() == Unit::Status::Dead) {
+            m_glovesExtraActPending = false;
+            m_glovesExtraActUnitId = -1;
+            isGlovesExtraAct = false;
+            unit = nextActingUnit();
         }
+    }
+
+    if (!unit) {
+        unit = nextActingUnit();
+    }
+
+    if (unit) {
+        setActiveUnitItem(unit->id());
         unit->act(this);
+
+        // 手套单位：在一次正常行动后，调度第二次行动（120ms 后）并处理高亮闪烁
+        if (!isGlovesExtraAct
+            && unit->equipment() && unit->equipment()->type() == Equipment::Type::Gloves
+            && isUnitOnBoard(unit) && unit->status() != Unit::Status::Dead) {
+            m_glovesExtraActPending = true;
+            m_glovesExtraActUnitId = unit->id();
+
+            // 100ms 后取消高亮
+            QTimer::singleShot(100, this, [this, uid = unit->id()]() {
+                if (m_activeActionUnitId == uid)
+                    setActiveUnitItem(-1);
+            });
+            // 150ms 后触发第二次行动
+            QTimer::singleShot(150, this, [this]() {
+                if (m_glovesExtraActPending && m_inBattle)
+                    battleTick();
+            });
+        }
+
+        if (isGlovesExtraAct) {
+            m_glovesExtraActPending = false;
+            m_glovesExtraActUnitId = -1;
+        }
     } else {
         setActiveUnitItem(-1);
     }
@@ -1989,8 +2195,11 @@ void Game::battleTick()
         }
     }
 
+    // 战斗结束检查（手套第二次行动也可能导致战斗结束）
     if (!hasAliveUnits(Unit::Owner::PlayerCtrl) || !hasAliveUnits(Unit::Owner::EnemyCtrl)) {
         stopBattleLoop();
+        m_glovesExtraActPending = false;
+        m_glovesExtraActUnitId = -1;
         setActiveUnitItem(-1);
         resolveRoundFromCurrentBoard();
 
@@ -2151,6 +2360,12 @@ void Game::addUnitFromShop(Unit* unit)
             this, &Game::handleDragMoved);
     connect(unitItem, &UnitItem::dragDropped,
             this, &Game::handleDropCommand);
+    connect(unitItem, &UnitItem::eqDragStarted,
+            this, &Game::handleUnitEqDragStarted);
+    connect(unitItem, &UnitItem::eqDragMoved,
+            this, &Game::handleUnitEqDragMoved);
+    connect(unitItem, &UnitItem::eqDragDropped,
+            this, &Game::handleUnitEqDragDropped);
             
     // 同步到视图
     syncFromBoard();

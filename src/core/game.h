@@ -32,20 +32,25 @@ class Game : public QObject
     Q_OBJECT
 
 public:
+    // ── 构造/析构 ──
     explicit Game(QObject* parent = nullptr);
     ~Game();
 
+    // ── 状态控制 ──
     void reset();
     void startNextStage();
     void startNextRound();
     void endDeployment();
+
+    // ── 调试 ──
     void debugEndBattle();
-    // 用于调试：重置全部状态并回到初始关卡。
     void debugResetAll();
-    
+
+    // ── 存档 ──
     bool saveToFile(const QString& filePath) const;
     bool loadFromFile(const QString& filePath);
 
+    // ── 访问器 ──
     Player* player() { return &m_player; }
     int enemyDefeatedWaves() const { return m_enemyDefeatedWaves; }
     int enemyMaxWaves() const { return m_enemyMaxWaves; }
@@ -53,37 +58,41 @@ public:
     int round() const { return m_round; }
     bool isInBattle() const { return m_inBattle; }
     int traitCount(Unit::Owner owner, Unit::Trait trait) const;
-    
-    QGraphicsScene* scene() const { return m_scene; }
 
+    QGraphicsScene* scene() const { return m_scene; }
+    const QList<Unit*>& units() const { return m_units; }
+    Bench* bench() { return &m_bench; }
+    Board* board() { return &m_board; }
+    Shop* shop() { return &m_shop; }
+
+    // ── 拖拽交互 ──
     void handleDragStarted(int unitId, const QPoint& sourceGrid, const QPointF& scenePos);
     void handleDragMoved(int unitId, const QPoint& sourceGrid, const QPointF& scenePos);
     void handleDropCommand(int unitId, const QPoint& sourceGrid, const QPointF& scenePos);
 
-    // 构建与更新装备栏 UI
+    // ── 装备栏 UI ──
     void buildEquipmentUI();
     void updateEquipmentUI();
 
+    // ── 单位管理 ──
+    void requestRemoveUnit(Unit* unit);
+    void removeUnitNow(Unit* unit);
+    bool moveUnitDuringBattle(Unit* unit, const QPoint& target);
+    bool isUnitOnBoard(const Unit* unit) const;
+    void addUnitFromShop(Unit* unit);
+
 public slots:
-    // 装备交互槽函数
+    // ── 装备交互 ──
     void handleEqDiscardClicked(int slotIndex);
     void handleEqDragStarted(int slotIndex, QPointF scenePos);
     void handleEqDragMoved(int slotIndex, QPointF scenePos);
     void handleEqDragDropped(int slotIndex, QPointF scenePos);
 
-public:
-    void requestRemoveUnit(Unit* unit);
-    bool moveUnitDuringBattle(Unit* unit, const QPoint& target);
-    bool isUnitOnBoard(const Unit* unit) const;
+    // ── 单位装备拖拽 ──
+    void handleUnitEqDragStarted(int unitId, QPointF scenePos);
+    void handleUnitEqDragMoved(int unitId, QPointF scenePos);
+    void handleUnitEqDragDropped(int unitId, QPointF scenePos);
 
-    void addUnitFromShop(Unit* unit);
-
-    const QList<Unit*>& units() const { return m_units; }
-
-    Bench* bench() { return &m_bench; }
-    Board* board() { return &m_board; }
-    Shop* shop() { return &m_shop; }
-    
 signals:
     void playerInfoChanged();
     void enemyInfoChanged();
@@ -93,6 +102,7 @@ signals:
     void enemyDefeated();
 
 private:
+    // ── 状态管理 ──
     void clearAllUnits();
     void loadFromState(const GameState& state);
     GameState captureState() const;
@@ -101,10 +111,12 @@ private:
     void clearEnemyUnits();
     void restorePlayerUnits();
 
+    // ── 查找 ──
     Unit* findUnitById(int unitId) const;
     GridItem* findGridItem(const QPoint& gridPos) const;
     UnitItem* findUnitItem(int unitId) const;
 
+    // ── Drop 逻辑 ──
     void clearGridHighlights();
     void clearBenchHighlights();
     bool canApplyDrop(int unitId, const QPoint& source, const QPoint& target) const;
@@ -114,13 +126,15 @@ private:
     bool transferUnitFromBoardToBench(int unitId, int benchSlot);
     bool transferUnitFromBenchToBoard(int unitId, const QPoint& target);
     bool moveUnitWithinBench(int fromSlot, int toSlot);
-    
+
+    // ── UI 构建 ──
     void buildScene();
     void buildShopUI();
     void updateShopUI();
     void syncFromBoard();
     void refreshTraitCounts();
 
+    // ── 战斗 ──
     int countAliveUnits(Unit::Owner owner) const;
     void applyRoundDamage(Unit::Owner winner, int remainingUnits);
     void resolveRoundFromCurrentBoard();
@@ -133,149 +147,99 @@ private:
     Unit* nextActingUnit();
     void setActiveUnitItem(int unitId);
 
-public:
-    void removeUnitNow(Unit* unit);
-
-private:
+    // ── 坐标工具 ──
     QPointF gridToWorld(int row, int col) const;
     QPoint worldToGrid(const QPointF& world) const;
     QPolygonF cellHexPolygon(int row, int col) const;
-    // 将羁绊枚举映射为数组索引。
     static int traitIndex(Unit::Trait trait);
-    // 读取单位的羁绊类型。
     static Unit::Trait traitForUnit(const Unit* unit);
 
-    // 成员变量
-
-    // 玩家对象
+    // ── 核心数据 ──
     Player m_player;
-
-    // 棋盘逻辑数据（地块占用、半场判定、单位落位真值来源）。
     Board m_board;
-
-    // 备战区槽位数据（未上阵单位的容器，默认 8 格）。
     Bench m_bench;
-    
-    // 商店逻辑数据
     Shop m_shop;
-
-    // 游戏中托管的全部单位对象（用于生命周期管理与按 ID 查找）。
     QList<Unit*> m_units;
 
-    // 主渲染场景，承载网格与单位图元。
+    // ── 场景/图元 ──
     QGraphicsScene* m_scene;
-
-    // 棋盘每个格子的图元集合（用于高亮、命中与刷新）。
     std::vector<GridItem*> m_gridItems;
-
-    // 单位图元集合（用于位置同步与显示控制）。
     std::vector<UnitItem*> m_unitItems;
 
-    // 备战区槽位图元与几何信息。
+    // ── 单位查找索引 ──
+    std::unordered_map<int, UnitItem*> m_unitItemById;
+
+    // ── 备战区 UI ──
     std::vector<QGraphicsRectItem*> m_benchItems;
     std::vector<QRectF> m_benchRects;
-    // 备战区标签文字。
     QGraphicsSimpleTextItem* m_benchLabel;
-    
-    // 商店UI的代理
+
+    // ── 商店 UI ──
     QGraphicsProxyWidget* m_shopProxy = nullptr;
-    // 商店内5个商品格子的布局指针，用于updateShopUI快速刷新
     std::vector<QVBoxLayout*> m_shopProductLayouts;
-    // 商店刷新按钮指针，用于更新启用状态
     QPushButton* m_shopRefreshBtn = nullptr;
     QPushButton* m_shopUpgradeBtn = nullptr;
-    // 商店出售区域判定矩形(场景坐标)
     QRectF m_shopSellRect;
     QWidget* m_shopSellWidget = nullptr;
 
-    // 装备栏标题
+    // ── 装备栏 UI ──
     QGraphicsSimpleTextItem* m_eqTitleLabel = nullptr;
-    // 装备栏图元 (5个格子)
     std::vector<class EquipmentSlotItem*> m_eqSlotItems;
 
-    // 装备拖拽相关
+    // ── 装备拖拽 ──
     bool m_dragEqActive;
     int m_activeEqSlotIndex;
     QGraphicsSimpleTextItem* m_dragEqIcon = nullptr;
 
-    // 当前是否处于拖拽流程中。
+    // ── 单位拖拽 ──
     bool m_dragActive;
-
-    // 当前正在被拖拽的单位 ID（无激活时为 -1）。
     int m_activeUnitId;
-
-    // 当前拖拽操作的起始棋盘坐标。
     QPoint m_sourceGrid;
-
-    // 当前拖拽是否来自备战区，以及对应槽位。
     bool m_sourceFromBench;
-    // 拖拽起点的备战区槽位索引（非备战区时为 -1）。
     int m_sourceBenchSlot;
 
-    // 单位 ID 到单位图元的快速索引表。
-    std::unordered_map<int, UnitItem*> m_unitItemById;
-
-    // 当前关卡（stage），与 Player::curStage 保持一致。
+    // ── 关卡/轮次 ──
     int m_stage;
-
-    // 当前轮次
     int m_round;
-
-    // 敌方已战胜波次与波次上限。
     int m_enemyDefeatedWaves;
-    // 敌方最大波次。
     int m_enemyMaxWaves;
 
-    // 战斗前玩家棋盘上的单位存档
+    // ── 战斗前玩家存档 ──
     QVector<UnitState> m_preBattlePlayerUnits;
 
-    // 敌方单位数量上限。
+    // ── 敌方 ──
     int m_enemyUnitCap;
-    // 当前敌方单位数量。
     int m_enemyUnitCount;
 
-    // 当前是否处于回合中。
+    // ── 战斗状态 ──
     bool m_inBattle;
-
-    // 战斗节拍定时器。
     QTimer* m_battleTimer;
-    // 战斗节拍间隔（毫秒）。
     int m_battleTickMs;
-    // 当前行动的单位 ID（高亮用，-1 表示无）。
     int m_activeActionUnitId;
-    // 战斗轮转索引。
     int m_battleTurnIndex;
 
-    // 待删除单位列表（在战斗 tick 后集中处理）。
+    // ── 手套双击 ──
+    bool m_glovesExtraActPending = false;
+    int m_glovesExtraActUnitId = -1;
+
+    // ── 待删除单位 ──
     QList<Unit*> m_unitsPendingRemoval;
 
-    // 棋盘行数缓存（用于坐标换算与遍历）。
+    // ── 棋盘尺寸 ──
     int m_rows;
-
-    // 棋盘列数缓存（用于坐标换算与遍历）。
     int m_cols;
-
-    // 六边形格子的外接半径（控制单元格大小）。
     qreal m_radius;
-    
-    // 相邻行中心点的纵向间距（控制六边形网格排布）。
     qreal m_rowSpacing;
 
-    // 备战区槽位默认颜色。
+    // ── 备战区外观 ──
     QColor m_benchSlotColor;
-    // 备战区槽位高亮颜色。
     QColor m_benchSlotHighlightColor;
-
-    // 备战区顶部 y 坐标（用于交互区域判断）。
     qreal m_benchTop;
-    // 棋盘与备战区分隔线 y 坐标。
     qreal m_separatorY;
 
-    // 羁绊枚举数量（None + Warrior + Mage + Archer）。
+    // ── 羁绊 ──
     static constexpr int kTraitCount = 4;
-    // 玩家单位羁绊计数缓存。
     std::array<int, kTraitCount> m_playerTraitCounts{};
-    // 敌方单位羁绊计数缓存。
     std::array<int, kTraitCount> m_enemyTraitCounts{};
 };
 

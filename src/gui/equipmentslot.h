@@ -15,6 +15,7 @@ public:
 
     void setEquipment(Equipment* eq);
     Equipment* equipment() const { return m_eq; }
+    void setActive(bool active);
 
 signals:
     void discardClicked(int slotIndex);
@@ -31,6 +32,7 @@ private:
     int m_slotIndex;
     Equipment* m_eq;
     bool m_dragging;
+    bool m_active;
     QRectF m_discardRect;
 };
 

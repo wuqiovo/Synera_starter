@@ -47,7 +47,10 @@ template <> constexpr inline auto UnitItem::qt_create_metaobjectdata<qt_meta_tag
         "QPointF",
         "scenePos",
         "dragMoved",
-        "dragDropped"
+        "dragDropped",
+        "eqDragStarted",
+        "eqDragMoved",
+        "eqDragDropped"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -62,6 +65,18 @@ template <> constexpr inline auto UnitItem::qt_create_metaobjectdata<qt_meta_tag
         // Signal 'dragDropped'
         QtMocHelpers::SignalData<void(int, const QPoint &, const QPointF &)>(9, 2, QMC::AccessPublic, QMetaType::Void, {{
             { QMetaType::Int, 3 }, { 0x80000000 | 4, 5 }, { 0x80000000 | 6, 7 },
+        }}),
+        // Signal 'eqDragStarted'
+        QtMocHelpers::SignalData<void(int, const QPointF &)>(10, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 3 }, { 0x80000000 | 6, 7 },
+        }}),
+        // Signal 'eqDragMoved'
+        QtMocHelpers::SignalData<void(int, const QPointF &)>(11, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 3 }, { 0x80000000 | 6, 7 },
+        }}),
+        // Signal 'eqDragDropped'
+        QtMocHelpers::SignalData<void(int, const QPointF &)>(12, 2, QMC::AccessPublic, QMetaType::Void, {{
+            { QMetaType::Int, 3 }, { 0x80000000 | 6, 7 },
         }}),
     };
     QtMocHelpers::UintData qt_properties {
@@ -89,6 +104,9 @@ void UnitItem::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         case 0: _t->dragStarted((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPoint>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[3]))); break;
         case 1: _t->dragMoved((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPoint>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[3]))); break;
         case 2: _t->dragDropped((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPoint>>(_a[2])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[3]))); break;
+        case 3: _t->eqDragStarted((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
+        case 4: _t->eqDragMoved((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
+        case 5: _t->eqDragDropped((*reinterpret_cast<std::add_pointer_t<int>>(_a[1])),(*reinterpret_cast<std::add_pointer_t<QPointF>>(_a[2]))); break;
         default: ;
         }
     }
@@ -98,6 +116,12 @@ void UnitItem::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id, vo
         if (QtMocHelpers::indexOfMethod<void (UnitItem::*)(int , const QPoint & , const QPointF & )>(_a, &UnitItem::dragMoved, 1))
             return;
         if (QtMocHelpers::indexOfMethod<void (UnitItem::*)(int , const QPoint & , const QPointF & )>(_a, &UnitItem::dragDropped, 2))
+            return;
+        if (QtMocHelpers::indexOfMethod<void (UnitItem::*)(int , const QPointF & )>(_a, &UnitItem::eqDragStarted, 3))
+            return;
+        if (QtMocHelpers::indexOfMethod<void (UnitItem::*)(int , const QPointF & )>(_a, &UnitItem::eqDragMoved, 4))
+            return;
+        if (QtMocHelpers::indexOfMethod<void (UnitItem::*)(int , const QPointF & )>(_a, &UnitItem::eqDragDropped, 5))
             return;
     }
 }
@@ -121,14 +145,14 @@ int UnitItem::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 3)
+        if (_id < 6)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 3;
+        _id -= 6;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 3)
+        if (_id < 6)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 3;
+        _id -= 6;
     }
     return _id;
 }
@@ -149,5 +173,23 @@ void UnitItem::dragMoved(int _t1, const QPoint & _t2, const QPointF & _t3)
 void UnitItem::dragDropped(int _t1, const QPoint & _t2, const QPointF & _t3)
 {
     QMetaObject::activate<void>(this, &staticMetaObject, 2, nullptr, _t1, _t2, _t3);
+}
+
+// SIGNAL 3
+void UnitItem::eqDragStarted(int _t1, const QPointF & _t2)
+{
+    QMetaObject::activate<void>(this, &staticMetaObject, 3, nullptr, _t1, _t2);
+}
+
+// SIGNAL 4
+void UnitItem::eqDragMoved(int _t1, const QPointF & _t2)
+{
+    QMetaObject::activate<void>(this, &staticMetaObject, 4, nullptr, _t1, _t2);
+}
+
+// SIGNAL 5
+void UnitItem::eqDragDropped(int _t1, const QPointF & _t2)
+{
+    QMetaObject::activate<void>(this, &staticMetaObject, 5, nullptr, _t1, _t2);
 }
 QT_WARNING_POP

@@ -42,7 +42,7 @@ private:
         150, 80, 100
     };
     const QVector<int> atkValues = {
-        10, 15, 10
+        15, 23, 15
     };
 
     QVector<UnitInfo*> m_products;

@@ -33,7 +33,10 @@ public:
         Dead // 已死亡
     };
 
-    explicit Unit(const QString& name = QString("Unit"), Trait trait = Trait::None, int hp = -1, int atk = -1);
+    explicit Unit(const QString& name = QString("Unit")
+        , Trait trait = Trait::None
+        , int hp = -1
+        , int atk = -1);
     virtual ~Unit() = default;
 
     static int getNextId() { return s_nextId; }
@@ -90,8 +93,6 @@ public:
     class Equipment* equipment() const { return m_equipment; }
     void setEquipment(class Equipment* eq);
 
-    bool canActThisTick() const;
-
     virtual void act(Game* game);
     virtual void upgrade();
     virtual void skill(Game* game);
@@ -142,35 +143,38 @@ private:
     int m_vunerableTurns;
     float m_vunerableDamageIncreaseRatio;
     
-    int m_actionPacingCounter;
     class Equipment* m_equipment;
 };
 
 class Warrior : public Unit
 {
 public:
-    explicit Warrior(const QString& name = QString("Warrior"), int hp = 150, int atk = 10);
+    explicit Warrior(const QString& name = QString::fromUtf8("战士")
+        , int hp = 150, int atk = 15);
     void skill(Game* game) override;
 };
 
 class Mage : public Unit
 {
 public:    
-    explicit Mage(const QString& name = QString("Mage"), int hp = 80, int atk = 15);
+    explicit Mage(const QString& name = QString::fromUtf8("法师")
+        , int hp = 80, int atk = 23);
     void skill(Game* game) override;
 };
 
 class Archer : public Unit
 {
 public:
-    explicit Archer(const QString& name = QString("Archer"), int hp = 100, int atk = 10);
+    explicit Archer(const QString& name = QString::fromUtf8("弓手")
+        , int hp = 100, int atk = 15);
     void skill(Game* game) override;
 };
 
 class Boss : public Unit
 {
 public:
-    explicit Boss(const QString& name = QString("Boss"), int hp = 200, int atk = 20);
+    explicit Boss(const QString& name = QString("Boss")
+        , int hp = 200, int atk = 30);
     void skill(Game* game) override;
 };
 
