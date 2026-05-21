@@ -551,7 +551,7 @@ void Mage::skill(Game* game)
     int skillDist = (mageCount >= 3) ? 2 : 1;
     
     const QList<Unit*>& units = game->units();
-    const int damage = adjustDamageOutput(20);
+    const int damage = adjustDamageOutput(atk());
     for (Unit* unit : units) {
         if (!unit || unit->owner() == owner() || unit->status() == Status::Dead) {
             continue;

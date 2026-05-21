@@ -56,6 +56,8 @@ public:
     int enemyMaxWaves() const { return m_enemyMaxWaves; }
     int stage() const { return m_stage; }
     int round() const { return m_round; }
+    int winStreak() const { return m_winStreak; }
+    int loseStreak() const { return m_loseStreak; }
     bool isInBattle() const { return m_inBattle; }
     int traitCount(Unit::Owner owner, Unit::Trait trait) const;
 
@@ -201,6 +203,8 @@ private:
     // ── 关卡/轮次 ──
     int m_stage;
     int m_round;
+    int m_winStreak;
+    int m_loseStreak;
     int m_enemyDefeatedWaves;
     int m_enemyMaxWaves;
 

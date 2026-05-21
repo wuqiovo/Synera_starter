@@ -14,7 +14,7 @@ UnitItem::UnitItem(Unit* unit, QGraphicsItem* parent)
     , m_dragging(false)
     , m_eqDragging(false)
     , m_active(false)
-    , m_eqRect(-24, 24, 48, 14)
+    , m_eqRect(-24, 27, 48, 12)
     , m_spriteTried(false)
 {
     setAcceptedMouseButtons(Qt::LeftButton);
@@ -22,7 +22,7 @@ UnitItem::UnitItem(Unit* unit, QGraphicsItem* parent)
 
 QRectF UnitItem::boundingRect() const
 {
-    return QRectF(-45, -62, 90, 106);
+    return QRectF(-38, -44, 76, 88);
 }
 
 void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget*)
@@ -95,7 +95,7 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
     if (m_unit) {
         const QString hpText = QString("%1/%2").arg(m_unit->hp()).arg(m_unit->maxHp());
         QFont hpFont = painter->font();
-        hpFont.setPointSize(9);
+        hpFont.setPointSize(7);
         hpFont.setBold(true);
         painter->setFont(hpFont);
         if (m_unit->owner() == Unit::Owner::EnemyCtrl) {
@@ -103,34 +103,34 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
         } else {
             painter->setPen(QColor(90, 170, 255));
         }
-        painter->drawText(QRectF(-32, -58, 64, 12), Qt::AlignCenter, hpText);
+        painter->drawText(QRectF(-32, -40, 64, 10), Qt::AlignCenter, hpText);
 
         if (m_unit->trait() == Unit::Trait::Mage || m_unit->maxMana() > 0) {
             const QString manaText = QString("%1/%2").arg(m_unit->mana()).arg(m_unit->maxMana());
             QFont manaFont = painter->font();
-            manaFont.setPointSize(8);
+            manaFont.setPointSize(7);
             painter->setFont(manaFont);
             painter->setPen(QColor(120, 210, 240));
-            painter->drawText(QRectF(-32, -46, 64, 12), Qt::AlignCenter, manaText);
+            painter->drawText(QRectF(-32, -31, 64, 10), Qt::AlignCenter, manaText);
         }
 
         // 在单位蓝条下方显示 Atk
         const QString atkText = QString("Atk: %1").arg(m_unit->atk());
         QFont atkFont = painter->font();
-        atkFont.setPointSize(8);
+        atkFont.setPointSize(7);
         atkFont.setBold(true);
         painter->setFont(atkFont);
         painter->setPen(QColor(255, 215, 0));
-        painter->drawText(QRectF(-32, -34, 64, 12), Qt::AlignCenter, atkText);
+        painter->drawText(QRectF(-32, -22, 64, 10), Qt::AlignCenter, atkText);
 
         // 在图标下方显示 Lv.x
         const QString levelText = QString("Lv. %1").arg(m_unit->level());
         QFont levelFont = painter->font();
-        levelFont.setPointSize(8);
+        levelFont.setPointSize(7);
         levelFont.setBold(true);
         painter->setFont(levelFont);
         painter->setPen(QColor(255, 215, 0));
-        painter->drawText(QRectF(-32, 14, 64, 12), Qt::AlignCenter, levelText);
+        painter->drawText(QRectF(-32, 16, 64, 10), Qt::AlignCenter, levelText);
         
         // 如果有装备，显示在等级下方
         if (m_unit->owner() == Unit::Owner::PlayerCtrl && m_unit->equipment()) {
@@ -143,11 +143,11 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
                 default: eqName = "Eq"; break;
             }
             QFont eqFont = painter->font();
-            eqFont.setPointSize(7);
+            eqFont.setPointSize(6);
             painter->setFont(eqFont);
             painter->setPen(Qt::white);
             painter->setBrush(QColor(50, 50, 50, 180));
-            QRectF bgRect(-24, 24, 48, 14);
+            QRectF bgRect(-24, 27, 48, 12);
             painter->drawRoundedRect(bgRect, 2, 2);
             painter->drawText(bgRect, Qt::AlignCenter, QString::fromUtf8("装备: ") + eqName);
         }

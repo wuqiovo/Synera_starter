@@ -52,6 +52,9 @@ struct PlayerState
     QString name;
     // 装备栏中每格的装备类型，None 表示空格。
     QVector<Equipment::Type> inventoryTypes;
+    // 连胜/连败计数。
+    int winStreak = 0;
+    int loseStreak = 0;
 };
 
 // 全局游戏存档

@@ -43,6 +43,8 @@ Game::Game(QObject* parent)
     , m_sourceBenchSlot(-1)
     , m_stage(0)
     , m_round(1)
+    , m_winStreak(0)
+    , m_loseStreak(0)
     , m_enemyDefeatedWaves(0)
     , m_enemyMaxWaves(5)
     , m_enemyUnitCap(30)
@@ -87,6 +89,8 @@ void Game::reset()
     m_sourceFromBench = false;
     m_sourceBenchSlot = -1;
     m_round = 0;
+    m_winStreak = 0;
+    m_loseStreak = 0;
     m_enemyDefeatedWaves = 0;
     m_enemyMaxWaves = 5;
     m_inBattle = false;
@@ -252,6 +256,8 @@ GameState Game::captureState() const
     state.player.populationCap = m_player.PopulationCap();
     state.player.stage = m_stage;
     state.player.round = m_round;
+    state.player.winStreak = m_winStreak;
+    state.player.loseStreak = m_loseStreak;
     state.player.name = m_player.getPlayerName();
 
     state.enemyDefeatedWaves = m_enemyDefeatedWaves;
@@ -321,6 +327,8 @@ void Game::loadFromState(const GameState& state)
 
     m_stage = state.player.stage;
     m_round = state.player.round;
+    m_winStreak = state.player.winStreak;
+    m_loseStreak = state.player.loseStreak;
     m_enemyDefeatedWaves = state.enemyDefeatedWaves;
     m_enemyMaxWaves = state.enemyMaxWaves;
     m_inBattle = state.inBattle;
@@ -550,6 +558,8 @@ bool Game::saveToFile(const QString& filePath) const
     player["populationCap"] = state.player.populationCap;
     player["stage"] = state.player.stage;
     player["round"] = state.player.round;
+    player["winStreak"] = state.player.winStreak;
+    player["loseStreak"] = state.player.loseStreak;
     player["name"] = state.player.name;
     QJsonArray inventory;
     for (int i = 0; i < state.player.inventoryTypes.size(); ++i) {
@@ -624,6 +634,8 @@ bool Game::loadFromFile(const QString& filePath)
     state.player.populationCap = player.value("populationCap").toInt(0);
     state.player.stage = player.value("stage").toInt(1);
     state.player.round = player.value("round").toInt(1);
+    state.player.winStreak = player.value("winStreak").toInt(0);
+    state.player.loseStreak = player.value("loseStreak").toInt(0);
     state.player.name = player.value("name").toString();
 
     // 读取玩家装备栏（旧存档可能没有此字段，全部默认为 None）。
@@ -2038,15 +2050,27 @@ int Game::countAliveUnits(Unit::Owner owner) const
     return count;
 }
 
-// 按规则对失败方总血量造成伤害，并发放金币奖励。
+// 按规则对失败方总血量造成伤害，并发放金币奖励（含连胜/连败/利息经济体系）。
 void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
 {
     const int damage = 10 * remainingUnits;
     
     if (winner == Unit::Owner::PlayerCtrl) {
-        m_player.setGold(m_player.Gold() + 8);
+        m_winStreak++;
+        m_loseStreak = 0;
+        // 基础奖励 + 连胜额外奖励：连胜x轮额外给予(x-1)金币
+        m_player.setGold(m_player.Gold() + 8 + (m_winStreak - 1));
     } else {
-        m_player.setGold(m_player.Gold() + 5);
+        m_loseStreak++;
+        m_winStreak = 0;
+        // 基础奖励 + 连败额外奖励：连败x轮额外给予2*(x-1)金币
+        m_player.setGold(m_player.Gold() + 5 + 2 * (m_loseStreak - 1));
+    }
+
+    // 利息结算：每有5金币额外获得1金币
+    const int interest = m_player.Gold() / 5;
+    if (interest > 0) {
+        m_player.addGold(interest);
     }
 
     if (damage <= 0) {
