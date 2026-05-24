@@ -987,7 +987,7 @@ void Game::restorePlayerUnits()
     emit playerInfoChanged();
 }
 
-// 敌方轮次生成：随回合数增加敌方单位数量（最多5个），并根据阶段属性增幅，第5波追加1个最终Boss。
+// 敌方轮次生成：第一回合生成2个，之后每回合增加2个（最多8个），并根据阶段属性增幅，第5波追加1个最终Boss。
 void Game::spawnEnemiesForCurrentRound()
 {
     const int availableSlots = m_enemyUnitCap - m_enemyUnitCount;
@@ -1016,8 +1016,8 @@ void Game::spawnEnemiesForCurrentRound()
                 this, &Game::handleUnitEqDragDropped);
     };
 
-    // 常规敌人数量，随回合数增加（第一回合2个，最多5个）
-    const int normalCount = qMin(5, m_round + 1);
+    // 常规敌人数量：第一回合2个，之后每回合+2，最多8个
+    const int normalCount = qMin(8, m_round * 2);
     const bool spawnBoss = (m_enemyDefeatedWaves >= 4);
     const int totalEnemies = normalCount + (spawnBoss ? 1 : 0);
 
@@ -1025,10 +1025,11 @@ void Game::spawnEnemiesForCurrentRound()
     const double multiplier = 1.0 + 0.1 * qMax(0, m_stage - 1);
 
     const QPoint normalPositions[] = {
-        QPoint(2, 0), QPoint(3, 0), QPoint(4, 0), QPoint(1, 0), QPoint(5, 0)
+        QPoint(2, 0), QPoint(3, 0), QPoint(4, 0), QPoint(1, 0), QPoint(5, 0),
+        QPoint(0, 0), QPoint(2, 1), QPoint(4, 1)
     };
     const QPoint bossPositions[] = {
-        QPoint(3, 1), QPoint(2, 1), QPoint(4, 1), QPoint(3, 2), QPoint(3, 0)
+        QPoint(3, 2), QPoint(2, 2), QPoint(4, 2), QPoint(3, 1), QPoint(1, 1)
     };
 
     int spawned = 0;
@@ -1040,22 +1041,23 @@ void Game::spawnEnemiesForCurrentRound()
         bool isBoss = spawnBoss && (i == normalCount);
 
         if (isBoss) {
-            // 后续替换为独立的 Boss 类，目前使用基础 Unit 占位
+            // Boss
             newEnemy = new Boss(QString::fromUtf8("最终Boss"), 200 * multiplier, 30 * multiplier);
 
             prefArr = bossPositions;
             prefCount = 5;
         } else {
-            // 增量顺序：0:战士, 1:弓手, 2:法师, 3:战士, 4:弓手
-            if (i == 0 || i == 3) {
+            // 生成顺序按战士→弓手→法师循环
+            const int typeIdx = i % 3;
+            if (typeIdx == 0) {
                 newEnemy = new Warrior(QString::fromUtf8("敌方战士"), 150 * multiplier, 15 * multiplier);
-            } else if (i == 1 || i == 4) {
+            } else if (typeIdx == 1) {
                 newEnemy = new Archer(QString::fromUtf8("敌方弓手"), 100 * multiplier, 15 * multiplier);
-            } else if (i == 2) {
+            } else {
                 newEnemy = new Mage(QString::fromUtf8("敌方法师"), 80 * multiplier, 23 * multiplier);
             }
 
-            if (i < 5) {
+            if (i < 8) {
                 prefArr = &normalPositions[i];
                 prefCount = 1;
             }
