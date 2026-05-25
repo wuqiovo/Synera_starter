@@ -1,0 +1,320 @@
+Synera: Synergy Auto-Arena
+ PA 
+2026  4  9 
+ uThe Last FlamevuTeamfight Tacticscvb  b  PA  Synera: Synergy Auto-Arena C++   (PVE)bLet's Go!
+0 
+WARNING All of the code for this project must be your own. You may not copy source code from other students or other sources that you find on the web. Plagiarism will not be tolerated.
+1. c  b
+2.   cb b
+3.  PA b  6  8 b b
+1
+
+
+
+Synera: Synergy Auto-Arena
+
+2026 
+
+ c
+·  B = [1, M ] × [1, N ] (x, y)b  occr(x, y)  Ur  {}  r b
+·  K = {1, . . . , K}c K = 8 b
+·  p/ u  U b  Unit b
+·  owner(u)  {PlayerCtrl, EnemyCtrl} /  traits(u)  T /c b
+·  r  Ur = Ar  Er Ar Er b PrepCombatResolveb
+·  S = {Idle, Moving, Attacking, Casting, Dead}b ·  u
+Oppr(u) = {v  Ur | owner(v) = owner(u), v }.
+ (a) b ·  g// g  g - cb
+ |Ar|  cap(p)b ·  t  T 
+nt = |{u  Ar | t  traits(u)}|,
+ nt  t b ·  merge3(·)
+ eq(u) c 1 b ·  ()
+ = (p, r, phase, Ar, Er, Bench, Shop, EquipPool).
+ b
+
+2
+
+
+
+Synera: Synergy Auto-Arena
+
+2026 
+
+1 
+
+cAuto-battleruThe Last FlamevuTeamfight Tacticscvb Synera: Synergy Auto-Arena b
+ Synera aa AI  cPVEbcOOP ab 3000 b
+ b
+· b
+· b
+
+
+
+
+
+   
+
+70%caa 10%c 10%cOOP a 10%c README / AI 
+
+2 
+2.1 
+ M × N c 8 × 8bc cb 1 × 1  b
+cBench 8  b
+2.2 
+b (HP)a (ATK)a  (Range)a (Max Mana)  (Mana)b
+ Unit  abuffaaaaac
+3
+
+
+
+Synera: Synergy Auto-Arena
+
+2026 
+
+ Unit b  
+· cPlayer pbc aaaa b
+· cUnit u  U b c HPaATKaRangeaMax ManaaManaaab
+· 
+owner : U  {PlayerCtrl, EnemyCtrl}.
+o/p owner(u)  Unit b
+·  traits(u)  T / b
+·  r 
+Ur = Ar  Er, Ar  Er = ,
+ Ar Er b
+·  u
+Oppr(u) = {v  Ur | owner(v) = owner(u), v }.
+aaaab b
+ Unit  owner  traits b r   Er  Arb Er  Ar bb
+ bc b
+
+4
+
+
+
+Synera: Synergy Auto-Arena
+
+2026 
+
+2.3 GUI
+cGUIb GUI a ba b
+b
+ Checklist · [ ]  M × N a/b · [ ] cBenchb · [ ]  Unit cHP/ATK/Range/Max Mana/Mana b · [ ] / Unit  owner traits b · [ ] cErb · [ ] cb · [ ] GUI //cab
+
+3 
+3.1 
+ PvE  b
+cc AI   Loopb
+·  b
+· b c Idle, Moving, Attacking, Casting, Deadb
+·  b
+
+5
+
+
+
+Synera: Synergy Auto-Arena
+
+2026 
+
+· c 3 b b
+· a c 1  1­2  3 b
+
+3.2 
+b · b · b
+cb
+· aa b
+· /b
+
+3.3 
+· b b
+
+· cb  3­5 ca  AOE ab
+
+·   0 b  0  b
+
+c
+
+      2  
+
+0c  10   60c  60 c 1   20  1  ATK  20­50HP  200­500  1  1.5­2   3  20%
+
+6
+
+
+
+Synera: Synergy Auto-Arena
+
+ Checklist · [ ] //b · [ ] b · [ ] cIdle/Moving/Attacking/Casting/Deadb · [ ] c + b · [ ] ab · [ ] aac3­5 b
+
+2026 
+
+4 
+4.1 
+bb cShop 5 b bb  3­4b c +1b bc 8b
+4.2 
+ 4­6 /cb Buffcab 1­2 b
+ 
+· " "  2/4 /b
+· " "  3 " "  b
+ 4­6  2  1  bb
+
+7
+
+
+
+Synera: Synergy Auto-Arena
+
+2026 
+
+4.3 
+  3  1 c 1  2 c  3 b2  c 1  1.5­2 b b b 1 c2  2  b 4 
+
+ 
+
+   
+
+ +15  +150  20%  -30c
+
+b
+
+4.4 
+bc aaa bb
+b
+
+4.5 GUI
+ GUI aa a//aa//a/ /ab
+b
+
+8
+
+
+
+Synera: Synergy Auto-Arena
+
+2026 
+
+ Checklist · [ ] ac5 b · [ ] ab · [ ] b · [ ]  4­6 /c 2  + 1  b · [ ] c3  1 2 b · [ ] a 4 b · [ ] /b · [ ] GUI aaaab
+
+5 
+ 10%b b b
+·  10  1 " "/ b
+· b " "cab
+· abcProjectiles b
+·  PvE  PvPb Socket  b
+· /b
+· b
+
+9
+
+
+
+Synera: Synergy Auto-Arena
+
+ Checklist · [ ]  1 b · [ ] cb · [ ]  GUI/b · [ ]  README ab
+
+2026 
+
+6 
+ b
+6.1 GUI  Starter Code
+ Qt  QtSDL2   C/C++ b
+ 1. Qt(https://www.qt.io/)  C++ b b Qt b Qt  https://qtguide.ustclug.org/  QtCreator  https://wizardforcel.gitbooks.io/qt-beginning/ content/  App b
+2. SDL2(https://www.libsdl.org/)  C  bcb b SDL2 https://lazyfoo.net/ tutorials/SDL/b
+ QT  Starter Codeb Demo  Qt ab  Demo / OOP  PA projb
+
+10
+
+
+
+Synera: Synergy Auto-Arena
+
+2026 
+
+6.2 
+ab c 60 fps update() b
+ (FSM)b IdlecaMovingcaAttackingcaCasting caDeadcb Bug b
+6.3 
+bcTileMap cBFS A* b
+ b cRe-pathingb" "  b
+6.4 
+b cb  Idle b
+6.5 
+cUnitaaUI ab b
+
+· Kenney (https://kenney.nl/assets)"strategy", "RPG", "UI" b  1-bit packaTiny RPG Forest b
+· OpenGameArt (https://opengameart.org)"character sprite 32x32" "tilemap RPG" b Licensec CC0  CC-BYb
+· itch.io (https://itch.io/game-assets)"sprite", "characters", "tiles" b
+· CraftPix (https://craftpix.net) 2D caa UI "2D character", "fantasy RPG", "top-down" b
+
+11
+
+
+
+Synera: Synergy Auto-Arena
+
+2026 
+
+·  32 × 32  64 × 64  PNG b  + c" "a" " b
+·  UIb Qt  QPainter b
+·  PNGc JPGcb
+·  assets/  res/  assets/units/a assets/ui/aassets/effects/ b
+WARNING c CC0 cb
+
+ GUI  GUI b
+
+7 
+Question 7.1  
+· aa b
+· /AI cGoogleaStack Overflow   ChatgptaDeepseek b b
+·  markdown  b
+·  b
+
+12
+
+
+
+Synera: Synergy Auto-Arena
+
+2026 
+
+Question 7.2 
+·  ""a"" ... ·  errorb ·  3 b
+ aab
+
+8 
+8.1 
+c.zip  .tar.gz c build/a*.oaab
+8.2  (README)
+ README.md 1. b 2. b 3. c Unit, Boardb 4. caab 5. cb
+8.3 AI 
+ AI b"AI " ·  AI b ·  AI 
+b AI  b
+
+13
+
+
+
+Synera: Synergy Auto-Arena
+
+2026 
+
+9 
+·  (OOP)ca b
+·  STLc std::vector, std::mapb ·  try-catch 
+ Segfaultcb ·  clang-formatb
+
+10 
+10.1 
+·  b
+· a b
+· ab
+10.2 
+·  Auto-battler  aab
+· b
+10.3 
+·  PA b ·  PA 
+b
+ Synera  PA 
+
+14
+
+

@@ -695,6 +695,10 @@ void Game::handleDragStarted(int unitId, const QPoint& sourceGrid, const QPointF
 {
     Q_UNUSED(sourceGrid);
 
+    if (m_inBattle) {
+        return;
+    }
+
     Unit* unit = findUnitById(unitId);
     if (!unit || unit->owner() != Unit::Owner::PlayerCtrl) {
         return;
@@ -1691,6 +1695,8 @@ void Game::updateEquipmentUI()
 
 void Game::handleEqDiscardClicked(int slotIndex)
 {
+    if (m_inBattle) return;
+
     m_player.removeInventory(slotIndex);
     updateEquipmentUI();
     emit playerInfoChanged();
@@ -1698,6 +1704,8 @@ void Game::handleEqDiscardClicked(int slotIndex)
 
 void Game::handleEqDragStarted(int slotIndex, QPointF scenePos)
 {
+    if (m_inBattle) return;
+
     Equipment* eq = m_player.inventory(slotIndex);
     if (!eq) return;
 
@@ -1780,6 +1788,8 @@ void Game::handleEqDragDropped(int slotIndex, QPointF scenePos)
 
 void Game::handleUnitEqDragStarted(int unitId, QPointF scenePos)
 {
+    if (m_inBattle) return;
+
     Unit* unit = findUnitById(unitId);
     if (!unit || !unit->equipment()) return;
 

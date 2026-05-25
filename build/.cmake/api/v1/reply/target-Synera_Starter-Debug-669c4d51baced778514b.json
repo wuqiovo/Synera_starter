@@ -368,11 +368,11 @@
 	"dependencies" : 
 	[
 		{
-			"backtrace" : 0,
-			"id" : "Synera_Starter_autogen::@6890427a1f51a3e7e1df"
+			"id" : "Synera_Starter_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
 		},
 		{
-			"id" : "Synera_Starter_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
+			"backtrace" : 0,
+			"id" : "Synera_Starter_autogen::@6890427a1f51a3e7e1df"
 		}
 	],
 	"id" : "Synera_Starter::@6890427a1f51a3e7e1df",
@@ -481,11 +481,11 @@
 			"id" : "Qt6::uic::@6890427a1f51a3e7e1df"
 		},
 		{
-			"backtrace" : 0,
-			"id" : "Synera_Starter_autogen::@6890427a1f51a3e7e1df"
+			"id" : "Synera_Starter_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
 		},
 		{
-			"id" : "Synera_Starter_autogen_timestamp_deps::@6890427a1f51a3e7e1df"
+			"backtrace" : 0,
+			"id" : "Synera_Starter_autogen::@6890427a1f51a3e7e1df"
 		}
 	],
 	"paths" : 

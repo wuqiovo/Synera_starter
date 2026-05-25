@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pdfinfo \"d:\\\\PA\\\\Synera_starter\\\\PA说明文档.pdf\")"
+    ]
+  }
+}
