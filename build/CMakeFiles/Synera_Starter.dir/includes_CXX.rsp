@@ -1,1 +1,0 @@
--ID:/PA/Synera_starter/build/Synera_Starter_autogen/include -ID:/PA/Synera_starter/src -isystem D:/Qt/6.11.0/mingw_64/include/QtCore -isystem D:/Qt/6.11.0/mingw_64/include -isystem "D:/Qt/6.11.0/mingw_64/mkspecs/win32-g++" -isystem D:/Qt/6.11.0/mingw_64/include/QtWidgets -isystem D:/Qt/6.11.0/mingw_64/include/QtGui
