@@ -349,7 +349,12 @@ bool Unit::prepareForAct(Game* game)
         }
     }
 
-    if (m_status != Status::Dead && m_status != Status::Attacking && m_status != Status::Casting) {
+    // 攻击/施法途中默认不切换目标；但若 m_target 已为空（目标死亡被移除时会被
+    // removeUnitNow 置空），则必须立刻重新索敌，否则单位会带着 Attacking/Casting
+    // 状态空转一回合——无论是自己补刀还是目标被友军击杀，都属于这种情况。
+    if (m_status != Status::Dead
+        && (m_target == nullptr
+            || (m_status != Status::Attacking && m_status != Status::Casting))) {
         m_target = findTarget(game);
     }
 
@@ -366,8 +371,8 @@ bool Unit::prepareForAct(Game* game)
     
     // 在非死亡状态下检查目标状态，必要时重置目标和状态
     if (m_status != Status::Dead) {
-        // 单位存活时优先寻找目标
-
+        // 防御性兜底：万一持有一个已死亡却尚未被移除的目标，清空并退回 Idle
+        // （正常流程下死亡目标会在 tick 末被 removeUnitNow 置空，这里通常不触发）。
         if (m_target && m_target->status() == Status::Dead) {
             m_target = nullptr;
             setStatus(Status::Idle);
@@ -429,7 +434,9 @@ void Unit::normalMoveBehavior(Game* game)
 
 void Unit::resolveAttack(Game* game)
 {
-    if (m_target && m_target->status() == Status::Dead) {
+    // 用 hp() <= 0 一并判定死亡：致命伤害刚造成时，目标的 Dead 状态尚未被
+    // battleTick 的集中循环写入，仅凭 status 会漏判，导致击杀当回合无法收尾。
+    if (m_target && (m_target->status() == Status::Dead || m_target->hp() <= 0)) {
         if (game) {
             game->requestRemoveUnit(m_target);
         }
