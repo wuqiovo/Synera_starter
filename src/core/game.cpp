@@ -2066,7 +2066,10 @@ int Game::countAliveUnits(Unit::Owner owner) const
 void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
 {
     const int damage = 10 * remainingUnits;
-    
+
+    // 利息基于本回合奖励发放前已攒下的金币，避免本回合战斗奖励参与利息计算
+    const int goldBeforeReward = m_player.Gold();
+
     if (winner == Unit::Owner::PlayerCtrl) {
         m_winStreak++;
         m_loseStreak = 0;
@@ -2075,12 +2078,12 @@ void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
     } else {
         m_loseStreak++;
         m_winStreak = 0;
-        // 基础奖励 + 连败额外奖励：连败x轮额外给予2*(x-1)金币
-        m_player.setGold(m_player.Gold() + 5 + 2 * (m_loseStreak - 1));
+        // 基础奖励 + 连败额外奖励：连败x轮额外给予3*(x-1)金币
+        m_player.setGold(m_player.Gold() + 5 + 3 * (m_loseStreak - 1));
     }
 
     // 利息结算：每有5金币额外获得1金币
-    const int interest = m_player.Gold() / 5;
+    const int interest = goldBeforeReward / 5;
     if (interest > 0) {
         m_player.addGold(interest);
     }
@@ -2101,7 +2104,7 @@ void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
     m_player.reduceHp(damage);
     emit playerInfoChanged();
     if (m_player.Hp() <= 0) {
-        emit gameOver(); // 需要定义此信号或进行处理。
+        emit gameOver(); 
     }
 }
 

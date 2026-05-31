@@ -128,7 +128,7 @@ Unit* Unit::findTarget(Game* game) const
     if (!game) {
         return nullptr;
     }
-    // 简单的目标选择逻辑：寻找最近的敌方单位（曼哈顿距离）
+    // 简单的目标选择逻辑：寻找最近的敌方单位
     Unit* closestTarget = nullptr;
     int closestDistance = std::numeric_limits<int>::max();
 
@@ -140,8 +140,8 @@ Unit* Unit::findTarget(Game* game) const
         if (!game->isUnitOnBoard(unit)) {
             continue;
         }
-        int distance = std::abs(unit->position().x() - this->position().x()) +
-                        std::abs(unit->position().y() - this->position().y());
+        // 使用六边形网格距离判定最近目标，与移动/攻击距离逻辑保持一致，避免索敌错误。
+        int distance = distanceTo(unit);
         if (distance < closestDistance) {
             closestDistance = distance;
             closestTarget = unit;
