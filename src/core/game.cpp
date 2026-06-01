@@ -2082,8 +2082,8 @@ void Game::applyRoundDamage(Unit::Owner winner, int remainingUnits)
         m_player.setGold(m_player.Gold() + 5 + 3 * (m_loseStreak - 1));
     }
 
-    // 利息结算：每有5金币额外获得1金币
-    const int interest = goldBeforeReward / 5;
+    // 利息结算：每有3金币额外获得1金币
+    const int interest = goldBeforeReward / 3;
     if (interest > 0) {
         m_player.addGold(interest);
     }

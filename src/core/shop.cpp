@@ -128,6 +128,7 @@ void Shop::buyUnit(int index, Game* game)
             }
             star2->setOwner(Unit::Owner::PlayerCtrl);
             star2->upgrade(); // 变成2星并增加属性
+            game->player()->addGold(4); // 升星时返还玩家4金币
             if (preservedEq) {
                 star2->setEquipment(preservedEq);
             }

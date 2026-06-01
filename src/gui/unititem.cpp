@@ -62,7 +62,11 @@ void UnitItem::paint(QPainter* painter, const QStyleOptionGraphicsItem*, QWidget
           << QPointF(-13, -7);
 
     painter->setPen(QPen(QColor(18, 18, 18), 1.5));
-    painter->setBrush(QColor(100, 150, 200));
+    if (m_unit && m_unit->owner() == Unit::Owner::EnemyCtrl) {
+        painter->setBrush(QColor(200, 70, 70));
+    } else {
+        painter->setBrush(QColor(100, 150, 200));
+    }
     painter->drawPolygon(badge);
 
     if (m_unit) {
